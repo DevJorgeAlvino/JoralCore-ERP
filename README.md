@@ -41,9 +41,9 @@ git clone [https://github.com/DevJorgeAlvino/JoralCore.git](https://github.com/D
 cd JoralCore
 ```
 
-### 2. Iniciar procesos internos
+### 2. Ejecutar el script de instalación
 ```bash
-cp .env.example .env
+sh joralcore.sh
 ```
 
 ### 3. Configurar las credenciales de la bd en el archivo .env
@@ -61,4 +61,4 @@ DB_PASSWORD=root <- contraseña de la base de datos
 php artisan joral:install --force
 ```
 
-### 5. Y listo inicializa el proyecto.
+### 5. Y listo inicializa el proyecto
