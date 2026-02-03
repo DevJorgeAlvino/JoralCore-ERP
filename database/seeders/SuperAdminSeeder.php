@@ -24,7 +24,7 @@ class SuperAdminSeeder extends Seeder
             ['email' => 'core@core.dev'], // Cambia esto por tu email
             [
                 'name' => 'Core',
-                'password' => Hash::make('password'), // Tu contraseña segura
+                'password' => Hash::make('mimomimaximen30'), // Tu contraseña segura
                 'email_verified_at' => now()
                 // Si tienes campos obligatorios extra, ponlos aquí
             ]
