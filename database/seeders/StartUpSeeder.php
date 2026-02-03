@@ -35,14 +35,12 @@ class StartUpSeeder extends Seeder
 
 
         // 3. CREAR EL USUARIO ADMINISTRADOR 👤
-        $user = User::firstOrCreate(
-            ['email' => 'core@core.com'], // Evita duplicados si corres el seed 2 veces
-            [
-                'name' => 'Core',
-                'password' => bcrypt('mimomimaximen30'), // Contraseña por defecto
-                'email_verified_at' => now(),
-            ]
-        );
+       $user = User::first() ?? User::create([
+            'name' => 'Core',
+            'email' => 'core@core.dev',
+            'password' => bcrypt('mimomimaximen30'),
+            'email_verified_at' => now(),
+        ]);
         
         // Vinculamos el usuario a la empresa (Relación Tenant)
         // IMPORTANTE: Ajusta esto según cómo guardas la relación (tabla pivote o columna)
@@ -58,7 +56,7 @@ class StartUpSeeder extends Seeder
         //      // $user->save();
         // }
 
-        $this->command->info('Usuario Super Admin creado: core@core.com');
+        // $this->command->info('Usuario Super Admin creado: core@core.com');
 
 
         // 4. ASIGNAR EL ROL SUPER ADMIN (El paso crucial) 👑
