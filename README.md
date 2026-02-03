@@ -37,8 +37,8 @@ Sigue estos 3 pasos sencillos para levantar el proyecto desde cero en cualquier 
 
 ### 1. Clonar el Repositorio
 ```bash
-git clone [https://github.com/DevJorgeAlvino/JoralCore.git](https://github.com/DevJorgeAlvino/JoralCore.git)
-cd JoralCore
+git clone https://github.com/DevJorgeAlvino/JoralCore-Multi-Tenancy.git JoralCore-Multi-Tenancy
+cd JoralCore-Multi-Tenancy
 ```
 
 ### 2. Ejecutar el script de instalación
