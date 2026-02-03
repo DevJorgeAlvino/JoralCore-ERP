@@ -14,11 +14,11 @@ class StartUpSeeder extends Seeder
     {
         // 1. GENERAR PERMISOS Y ROL SUPER_ADMIN (Magia de Shield) 🛡️
         // Esto escanea tus policies y crea los permisos en la BD + el rol 'super_admin'
-        $this->command->info('Generando permisos y roles de Shield...');
-        Artisan::call('shield:generate --all --ignore-existing-policies');
+        // $this->command->info('Generando permisos y roles de Shield...');
+        // Artisan::call('shield:generate --all --ignore-existing-policies');
         
-        // Limpiamos caché de permisos para evitar errores
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        // // Limpiamos caché de permisos para evitar errores
+        // app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
 
         // 2. CREAR LA EMPRESA PRINCIPAL 🏢
