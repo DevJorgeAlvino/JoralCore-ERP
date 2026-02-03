@@ -31,7 +31,7 @@ class JoralInstall extends Command
         }
 
         // Barra de progreso para que se vea profesional
-        $bar = $this->output->createProgressBar(5);
+        $bar = $this->output->createProgressBar(6);
         $bar->start();
 
         // PASO 1: Generar Key (si no existe)
@@ -80,7 +80,6 @@ class JoralInstall extends Command
 
         $this->info(' � Iniciando Proyecto...');
         $this->call('composer run dev');
-        $bar->advance();
 
         $bar->finish();
     }
