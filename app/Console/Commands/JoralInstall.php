@@ -25,7 +25,7 @@ class JoralInstall extends Command
         $this->info("🚀 Iniciando instalación de JoralCore System...");
 
         // 1. Advertencia de seguridad (Porque migrate:fresh borra todo)
-        if (! $this->option('force') && ! $this->confirm('⚠️  ADVERTENCIA: Esto borrará TODA la base de datos. ¿Deseas continuar?')) {
+        if (!$this->option('force') && !$this->confirm('⚠️  ADVERTENCIA: Esto borrará TODA la base de datos. ¿Deseas continuar?')) {
             $this->warn('Cancelado por el usuario.');
             return;
         }
@@ -35,7 +35,7 @@ class JoralInstall extends Command
         $bar->start();
 
         // PASO 1: Generar Key (si no existe)
-        if (! env('APP_KEY')) {
+        if (!env('APP_KEY')) {
             $this->callSilent('key:generate');
         }
         $bar->advance();
@@ -59,27 +59,28 @@ class JoralInstall extends Command
         $this->info(' 🗄️  Creando tablas y sembrando datos (esto puede tardar)...');
         // Aquí llamamos a tu Seeder maestro que ya incluye a Shield
         $this->call('migrate:fresh');
-        
+
         $bar->advance();
 
         // PASO 5: Regenerar Shield por si acaso (Opcional, doble seguridad)
+        $this->newLine();
         $this->info(' 🛡️  Asegurando permisos de Shield...');
-        $this->callSilent('shield:generate', ['--all' => true]);
+        $this->call('shield:generate', ['--all' => true]);
         $bar->advance();
 
+        $this->newLine();
         $this->info(' 👤 Sembrando datos de Administrador...');
         $this->call('db:seed');
         $bar->advance();
-        
+
         $this->newLine(2);
         $this->info('✅ ¡JoralCore instalado correctamente!');
         $this->info('👤 Usuario: core@core.com');
         $this->info('🔑 Password: mimomimaximen30');
         $this->info('-------------------------------------------');
-        $this->comment('Listo para que ingreses al sistema. Iniciando Proyecto...');
-
-        $this->info(' � Iniciando Proyecto...');
-        $this->call('composer run dev');
+        $this->comment('Listo para que ingreses al sistema');
+        $this->comment('Para iniciar el sistema, ejecuta el siguiente comando:');
+        $this->comment('composer run dev');
 
         $bar->finish();
     }
