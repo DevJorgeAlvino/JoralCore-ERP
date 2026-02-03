@@ -1,19 +1,37 @@
 #!/bin/bash
 
-echo "🚀 Iniciando Instalación Maestra de JoralCore..."
+# Colores para mensajes
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
 
-# 1. Instalar dependencias PHP (Esto crea la carpeta vendor)
-echo "📦 Ejecutando Dependencias Composer y Npm"
+echo -e "${CYAN}🚀 Iniciando preparación del entorno JoralCore...${NC}"
+
+# 1. Instalar dependencias PHP
+echo -e "\n${YELLOW}📦 Instalando dependencias de Backend (Composer)...${NC}"
 composer install
+
+# 2. Instalar dependencias JS
+echo -e "\n${YELLOW}🎨 Instalando dependencias de Frontend (NPM)...${NC}"
 npm install
 npm run build
 
-# 2. Copiar .env si no existe
+# 3. Preparar .env
 if [ ! -f .env ]; then
-    echo "📄 Creando archivo .env..."
+    echo -e "\n${YELLOW}📄 Creando archivo de configuración .env...${NC}"
     cp .env.example .env
+else
+    echo -e "\n${GREEN}✅ El archivo .env ya existe.${NC}"
 fi
 
-echo "✅ ¡TODO LISTO! Configura tu archivo .env y utiliza php artisan joral:install --force para instalar JoralCore..."
-# Opcional: Abrir servidores
-# php artisan serve & npm run dev
+# 4. Mensaje Final
+echo -e "\n${GREEN}-------------------------------------------------------------${NC}"
+echo -e "${GREEN}✅ Dependencias instaladas correctamente.${NC}"
+echo -e "${GREEN}-------------------------------------------------------------${NC}"
+echo -e "${YELLOW}⚠️  PASO OBLIGATORIO:${NC}"
+echo -e "1. Abre el archivo ${CYAN}.env${NC} ahora mismo."
+echo -e "2. Configura las credenciales de tu Base de Datos (DB_DATABASE, DB_USERNAME, etc)."
+echo -e "3. Guarda los cambios."
+echo -e "\nCuando hayas terminado, ejecuta el siguiente comando mágico para finalizar:"
+echo -e "\n    ${CYAN}php artisan joral:install${NC}\n"
