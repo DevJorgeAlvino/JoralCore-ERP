@@ -50,16 +50,16 @@ class JoralInstall extends Command
         $this->info(' 📂 Storage linkeado.');
         $bar->advance();
 
-        // PASO 3: Limpieza de Caché
-        $this->callSilent('optimize:clear');
-        $bar->advance();
-
-        // PASO 4: Migración y Seeds (El paso pesado)
+        // PASO 3: Migración y Seeds (El paso pesado)
         $this->newLine();
         $this->info(' 🗄️  Creando tablas y sembrando datos (esto puede tardar)...');
         // Aquí llamamos a tu Seeder maestro que ya incluye a Shield
         $this->call('migrate:fresh');
 
+        $bar->advance();
+
+        // PASO 4: Limpieza de Caché
+        $this->callSilent('optimize:clear');
         $bar->advance();
 
         // PASO 5: Regenerar Shield por si acaso (Opcional, doble seguridad)
