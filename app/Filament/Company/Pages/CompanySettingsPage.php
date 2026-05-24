@@ -8,10 +8,13 @@ use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -23,11 +26,20 @@ class CompanySettingsPage extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static ?string $navigationLabel = 'Configuración';
+    public static function getNavigationLabel(): string
+    {
+        return __('settings.company_nav');
+    }
 
-    protected static ?string $title = 'Configuración de la Empresa';
+    public function getTitle(): string
+    {
+        return __('settings.company_title');
+    }
 
-    protected static string | UnitEnum | null $navigationGroup = 'Sistema';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('settings.system_group');
+    }
 
     protected static ?int $navigationSort = 90;
 
@@ -63,62 +75,114 @@ class CompanySettingsPage extends Page
             ->statePath('data')
             ->components([
 
-                // ─── Branding de la Empresa ──────────────────
-                Section::make('Branding de la Empresa')
-                    ->description('Logo, ícono y colores del panel para esta empresa.')
-                    ->icon('heroicon-o-paint-brush')
-                    ->schema([
-                        FileUpload::make('company_logo')
-                            ->label('Logo de la Empresa')
-                            ->image()
-                            ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
-                            ->directory(function () {
-                                $tenantUlid = filament()->getTenant()?->id;
-                                return "companies/company_{$tenantUlid}/branding";
-                            })
-                            ->visibility('public')
-                            ->maxSize(2048)
-                            ->helperText('Recomendado: PNG transparente, 400×100px máximo. Máx 2MB.')
-                            ->columnSpanFull(),
+                Grid::make(['default' => 1, 'lg' => 2])->schema([
+                    
+                    // ─── Columna Izquierda ───
+                    Group::make()->schema([
+                        Section::make(__('settings.sections.company_branding'))
+                            ->description(__('settings.sections.company_branding_desc'))
+                            ->icon('heroicon-o-paint-brush')
+                            ->schema([
+                                FileUpload::make('company_logo')
+                                    ->label(__('settings.fields.app_logo'))
+                                    ->image()
+                                    ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
+                                    ->directory(function () {
+                                        $tenantUlid = filament()->getTenant()?->id;
+                                        return "companies/company_{$tenantUlid}/branding";
+                                    })
+                                    ->visibility('public')
+                                    ->maxSize(2048)
+                                    ->helperText(__('settings.helpers.logo_admin')),
 
-                        FileUpload::make('company_icon')
-                            ->label('Ícono / Favicon')
-                            ->image()
-                            ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
-                            ->directory(function () {
-                                $tenantUlid = filament()->getTenant()?->id;
-                                return "companies/company_{$tenantUlid}/branding";
-                            })
-                            ->visibility('public')
-                            ->maxSize(512)
-                            ->helperText('Se muestra en la pestaña del navegador. Recomendado: 32×32px.'),
+                                FileUpload::make('company_icon')
+                                    ->label(__('settings.fields.app_favicon'))
+                                    ->image()
+                                    ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
+                                    ->directory(function () {
+                                        $tenantUlid = filament()->getTenant()?->id;
+                                        return "companies/company_{$tenantUlid}/branding";
+                                    })
+                                    ->visibility('public')
+                                    ->maxSize(512)
+                                    ->helperText(__('settings.helpers.favicon')),
 
-                        ColorPicker::make('primary_color')
-                            ->label('Color Primario')
-                            ->required()
-                            ->helperText('Color principal de botones, links y acentos del panel.'),
+                                ColorPicker::make('primary_color')
+                                    ->label(__('settings.fields.color_primary'))
+                                    ->required()
+                                    ->helperText(__('settings.helpers.color_primary')),
 
-                        ColorPicker::make('secondary_color')
-                            ->label('Color Secundario')
-                            ->required()
-                            ->helperText('Color para badges y elementos complementarios.'),
+                                ColorPicker::make('secondary_color')
+                                    ->label(__('settings.fields.color_secondary'))
+                                    ->required()
+                                    ->helperText(__('settings.helpers.color_secondary')),
+                            ]),
+                    ])->columnSpan(1),
 
-                        Select::make('locale')
-                            ->label('Idioma de la Empresa')
-                            ->options([
-                                'es' => '🇪🇸 Español',
-                                'en' => '🇺🇸 English',
-                                'pt' => '🇧🇷 Português',
-                            ])
-                            ->required()
-                            ->native(false),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
+                    // ─── Columna Derecha ───
+                    Group::make()->schema([
+                        Section::make(__('settings.sections.language'))
+                            ->description(__('settings.sections.language_desc'))
+                            ->icon('heroicon-o-language')
+                            ->schema([
+                                ToggleButtons::make('locale')
+                                    ->label(__('settings.fields.locale'))
+                                    ->options([
+                                        'es' => '🇪🇸 ES',
+                                        'en' => '🇺🇸 EN',
+                                        'pt' => '🇧🇷 PT',
+                                    ])
+                                    ->inline()
+                                    ->required()
+                            ]),
 
-                // ─── Horarios de Atención ────────────────────
-                Section::make('Horarios de Atención')
-                    ->description('Configura los horarios de operación por día de la semana.')
+                        Section::make(__('settings.sections.currency'))
+                            ->description(__('settings.sections.currency_desc'))
+                            ->icon('heroicon-o-currency-dollar')
+                            ->collapsed()
+                            ->schema([
+                                Select::make('secondary_currency')
+                                    ->label(__('settings.fields.secondary_currency'))
+                                    ->options([
+                                        'USD' => 'USD — Dólar americano ($)',
+                                        'EUR' => 'EUR — Euro (€)',
+                                        'PEN' => 'PEN — Sol peruano (S/)',
+                                        'CLP' => 'CLP — Peso chileno ($)',
+                                    ])
+                                    ->native(false)
+                                    ->placeholder('Seleccionar moneda...')
+                                    ->helperText(__('settings.helpers.currency')),
+
+                                TextInput::make('exchange_rate')
+                                    ->label(__('settings.fields.exchange_rate'))
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->step(0.0001)
+                                    ->helperText(__('settings.helpers.exchange_rate')),
+                            ])->columns(2),
+
+                        Section::make(__('settings.sections.stock'))
+                            ->description(__('settings.sections.stock_desc'))
+                            ->icon('heroicon-o-exclamation-triangle')
+                            ->collapsed()
+                            ->schema([
+                                Toggle::make('stock_alert_enabled')
+                                    ->label(__('settings.fields.stock_alert_enabled'))
+                                    ->helperText(__('settings.helpers.stock_toggle')),
+
+                                TextInput::make('stock_alert_min')
+                                    ->label(__('settings.fields.stock_alert_min'))
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->required()
+                                    ->helperText(__('settings.helpers.stock_min')),
+                            ])->columns(2),
+                    ])->columnSpan(1),
+                ]),
+
+                // ─── Ancho Completo (Abajo) ───
+                Section::make(__('settings.sections.business_hours'))
+                    ->description(__('settings.sections.business_hours_desc'))
                     ->icon('heroicon-o-clock')
                     ->collapsed()
                     ->schema([
@@ -126,31 +190,31 @@ class CompanySettingsPage extends Page
                             ->label('')
                             ->schema([
                                 Select::make('day')
-                                    ->label('Día')
+                                    ->label(__('settings.fields.day'))
                                     ->options([
-                                        'lunes'     => 'Lunes',
-                                        'martes'    => 'Martes',
-                                        'miércoles' => 'Miércoles',
-                                        'jueves'    => 'Jueves',
-                                        'viernes'   => 'Viernes',
-                                        'sábado'    => 'Sábado',
-                                        'domingo'   => 'Domingo',
+                                        'lunes'     => __('settings.days.lunes'),
+                                        'martes'    => __('settings.days.martes'),
+                                        'miércoles' => __('settings.days.miércoles'),
+                                        'jueves'    => __('settings.days.jueves'),
+                                        'viernes'   => __('settings.days.viernes'),
+                                        'sábado'    => __('settings.days.sábado'),
+                                        'domingo'   => __('settings.days.domingo'),
                                     ])
                                     ->required()
                                     ->native(false),
 
                                 TextInput::make('open')
-                                    ->label('Apertura')
+                                    ->label(__('settings.fields.open'))
                                     ->type('time')
                                     ->required(),
 
                                 TextInput::make('close')
-                                    ->label('Cierre')
+                                    ->label(__('settings.fields.close'))
                                     ->type('time')
                                     ->required(),
 
                                 Toggle::make('active')
-                                    ->label('Activo')
+                                    ->label(__('settings.fields.active'))
                                     ->default(true),
                             ])
                             ->columns(4)
@@ -160,53 +224,6 @@ class CompanySettingsPage extends Page
                     ])
                     ->columnSpanFull(),
 
-                // ─── Moneda Secundaria ───────────────────────
-                Section::make('Moneda de Operación Secundaria')
-                    ->description('Configura una moneda adicional y su tasa de cambio referencial.')
-                    ->icon('heroicon-o-currency-dollar')
-                    ->collapsed()
-                    ->schema([
-                        Select::make('secondary_currency')
-                            ->label('Moneda Secundaria')
-                            ->options([
-                                'USD' => 'USD — Dólar americano ($)',
-                                'EUR' => 'EUR — Euro (€)',
-                                'PEN' => 'PEN — Sol peruano (S/)',
-                                'CLP' => 'CLP — Peso chileno ($)',
-                            ])
-                            ->native(false)
-                            ->placeholder('Seleccionar moneda...')
-                            ->helperText('Moneda adicional para cotizaciones y reportes.'),
-
-                        TextInput::make('exchange_rate')
-                            ->label('Tasa de Cambio')
-                            ->numeric()
-                            ->minValue(0)
-                            ->step(0.0001)
-                            ->helperText('Tasa de conversión referencial respecto a la moneda base.'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-
-                // ─── Alertas de Stock ────────────────────────
-                Section::make('Alertas de Stock')
-                    ->description('Parámetros para notificaciones de inventario bajo.')
-                    ->icon('heroicon-o-exclamation-triangle')
-                    ->collapsed()
-                    ->schema([
-                        Toggle::make('stock_alert_enabled')
-                            ->label('Alertas habilitadas')
-                            ->helperText('Activa o desactiva las notificaciones de stock mínimo.'),
-
-                        TextInput::make('stock_alert_min')
-                            ->label('Stock Mínimo')
-                            ->numeric()
-                            ->minValue(0)
-                            ->required()
-                            ->helperText('Cantidad mínima de unidades antes de generar alerta.'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
             ]);
     }
 
@@ -237,14 +254,14 @@ class CompanySettingsPage extends Page
         }
 
         Notification::make()
-            ->title('Configuración guardada')
-            ->body('Los cambios de branding se aplicarán en la próxima carga del panel.')
+            ->title(__('settings.messages.saved_title'))
+            ->body(__('settings.messages.saved_company'))
             ->success()
             ->send();
     }
 
     /**
-     * Horarios por defecto (lunes a viernes, 08:00 - 18:00).
+     * Horarios por defecto.
      */
     private function defaultBusinessHours(): array
     {

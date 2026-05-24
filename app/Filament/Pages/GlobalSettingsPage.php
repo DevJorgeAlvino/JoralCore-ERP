@@ -7,11 +7,13 @@ use App\Providers\Filament\AdminPanelProvider;
 use App\Services\SystemSettingService;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use BackedEnum;
@@ -22,11 +24,20 @@ class GlobalSettingsPage extends Page
 {
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static ?string $navigationLabel = 'Configuración Global';
+    public static function getNavigationLabel(): string
+    {
+        return __('settings.global_nav');
+    }
 
-    protected static ?string $title = 'Configuración Global del Sistema';
+    public function getTitle(): string
+    {
+        return __('settings.global_title');
+    }
 
-    protected static string | UnitEnum | null $navigationGroup = 'Sistema';
+    public static function getNavigationGroup(): ?string
+    {
+        return __('settings.system_group');
+    }
 
     protected static ?int $navigationSort = 100;
 
@@ -37,7 +48,6 @@ class GlobalSettingsPage extends Page
 
     public function mount(): void
     {
-        
         $settings = SystemSettingService::all();
 
         $this->form->fill([
@@ -55,74 +65,74 @@ class GlobalSettingsPage extends Page
         return $schema
             ->statePath('data')
             ->components([
+                Grid::make(['default' => 1, 'lg' => 2])->schema([
+                    
+                    // Columna Izquierda
+                    Group::make()->schema([
+                        Section::make(__('settings.sections.branding'))
+                            ->description(__('settings.sections.branding_desc'))
+                            ->icon('heroicon-o-paint-brush')
+                            ->schema([
+                                TextInput::make('app_name')
+                                    ->label(__('settings.fields.app_name'))
+                                    ->required()
+                                    ->maxLength(100)
+                                    ->helperText(__('settings.helpers.app_name')),
 
-                // ─── Branding del Login y Panel Admin ────────
-                Section::make('Branding del ERP (Login y Panel Admin)')
-                    ->description('Logo y nombre que se muestran en la pantalla de login del ERP y en el panel del administrador global. Esto NO afecta a los paneles de las empresas.')
-                    ->icon('heroicon-o-paint-brush')
-                    ->schema([
-                        TextInput::make('app_name')
-                            ->label('Nombre de la Aplicación')
-                            ->required()
-                            ->maxLength(100)
-                            ->helperText('Se muestra en la pestaña del navegador y en el login del panel Admin.'),
+                                FileUpload::make('app_logo')
+                                    ->label(__('settings.fields.app_logo'))
+                                    ->image()
+                                    ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
+                                    ->directory('branding')
+                                    ->visibility('public')
+                                    ->maxSize(2048)
+                                    ->helperText(__('settings.helpers.logo_admin')),
 
-                        FileUpload::make('app_logo')
-                            ->label('Logo del Login')
-                            ->image()
-                            ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
-                            ->directory('branding')
-                            ->visibility('public')
-                            ->maxSize(2048)
-                            ->helperText('Recomendado: PNG transparente, 400×100px máximo. Máx 2MB.'),
-
-                        FileUpload::make('app_favicon')
-                            ->label('Favicon del Panel Admin')
-                            ->image()
-                            ->directory('branding')
-                            ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
-                            ->visibility('public')
-                            ->maxSize(512)
-                            ->helperText('Recomendado: ICO o PNG de 32×32px. Máx 512KB.'),
-                    ])
-                    ->columns(1)
-                    ->columnSpanFull(),
-
-                // ─── Paleta de Colores del Admin ─────────────
-                Section::make('Colores del Panel Admin')
-                    ->description('Colores del panel de administración global. Cada empresa configura sus propios colores.')
-                    ->icon('heroicon-o-swatch')
-                    ->schema([
-                        ColorPicker::make('color_primary')
-                            ->label('Color Primario')
-                            ->required()
-                            ->helperText('Color principal de botones y acentos del panel Admin.'),
-
-                        ColorPicker::make('color_secondary')
-                            ->label('Color Secundario')
-                            ->required()
-                            ->helperText('Color de elementos secundarios.'),
-                    ])
-                    ->columns(2)
-                    ->columnSpanFull(),
-
-                // ─── Idioma Global ───────────────────────────
-                Section::make('Idioma Global del Sistema')
-                    ->description('Idioma por defecto. Cada empresa puede sobrescribir este valor en su propia configuración.')
-                    ->icon('heroicon-o-language')
-                    ->schema([
-                        Select::make('default_locale')
-                            ->label('Idioma por Defecto')
-                            ->options([
-                                'es' => '🇪🇸 Español',
-                                'en' => '🇺🇸 English',
-                                'pt' => '🇧🇷 Português',
+                                FileUpload::make('app_favicon')
+                                    ->label(__('settings.fields.app_favicon'))
+                                    ->image()
+                                    ->directory('branding')
+                                    ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
+                                    ->visibility('public')
+                                    ->maxSize(512)
+                                    ->helperText(__('settings.helpers.favicon')),
                             ])
-                            ->required()
-                            ->native(false),
-                    ])
-                    ->columns(1)
-                    ->columnSpanFull(),
+                    ])->columnSpan(1),
+
+                    // Columna Derecha
+                    Group::make()->schema([
+                        Section::make(__('settings.sections.colors'))
+                            ->description(__('settings.sections.colors_desc'))
+                            ->icon('heroicon-o-swatch')
+                            ->schema([
+                                ColorPicker::make('color_primary')
+                                    ->label(__('settings.fields.color_primary'))
+                                    ->required()
+                                    ->helperText(__('settings.helpers.color_primary')),
+
+                                ColorPicker::make('color_secondary')
+                                    ->label(__('settings.fields.color_secondary'))
+                                    ->required()
+                                    ->helperText(__('settings.helpers.color_secondary')),
+                            ])->columns(2),
+
+                        Section::make(__('settings.sections.language'))
+                            ->description(__('settings.sections.language_desc'))
+                            ->icon('heroicon-o-language')
+                            ->schema([
+                                ToggleButtons::make('default_locale')
+                                    ->label(__('settings.fields.default_locale'))
+                                    ->options([
+                                        'es' => '🇪🇸 ES',
+                                        'en' => '🇺🇸 EN',
+                                        'pt' => '🇧🇷 PT',
+                                    ])
+                                    ->inline()
+                                    ->required()
+                            ]),
+                    ])->columnSpan(1),
+
+                ]),
             ]);
     }
 
@@ -153,8 +163,8 @@ class GlobalSettingsPage extends Page
         }
 
         Notification::make()
-            ->title('Configuración guardada')
-            ->body('Los cambios globales se aplicarán en la próxima carga del panel Admin.')
+            ->title(__('settings.messages.saved_title'))
+            ->body(__('settings.messages.saved_global'))
             ->success()
             ->send();
     }
