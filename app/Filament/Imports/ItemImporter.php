@@ -189,10 +189,10 @@ class ItemImporter extends Importer
                             ->first();
 
                         if ($dbNotification) {
-                            $data = json_decode($dbNotification->data, true) ?? [];
+                            $data = $dbNotification->data ?? [];
                             if (($data['format'] ?? '') === 'filament' && !isset($data['company_id'])) {
                                 $data['company_id'] = $companyId;
-                                $dbNotification->update(['data' => json_encode($data)]);
+                                $dbNotification->update(['data' => $data]);
                             }
                         }
                     } catch (\Throwable) {

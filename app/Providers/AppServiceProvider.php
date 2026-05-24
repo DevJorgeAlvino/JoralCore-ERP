@@ -28,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        \Livewire\Livewire::component('company-database-notifications', \App\Livewire\Notifications\CompanyDatabaseNotifications::class);
+        \Livewire\Livewire::component('admin-database-notifications', \App\Livewire\Notifications\AdminDatabaseNotifications::class);
+        
         $this->configureDefaults();
 
         // Gate::policy(Category::class, CategoryPolicy::class);
@@ -156,7 +159,7 @@ class AppServiceProvider extends ServiceProvider
         // UUID = notificación del panel Company (filtrada por empresa).
         \Illuminate\Notifications\DatabaseNotification::creating(function ($notification) {
             try {
-                $data = json_decode($notification->data, true) ?? [];
+                $data = $notification->data ?? [];
 
                 // Solo procesamos notificaciones de Filament
                 if (($data['format'] ?? '') !== 'filament') {
@@ -177,9 +180,9 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
 
-                // Inyectamos en el JSON del data
+                // Inyectamos en el arreglo data
                 $data['company_id'] = $companyId;
-                $notification->data = json_encode($data);
+                $notification->data = $data;
 
             } catch (\Throwable) {
                 // Si algo falla, no bloqueamos la notificación

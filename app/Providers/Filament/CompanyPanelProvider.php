@@ -36,6 +36,7 @@ class CompanyPanelProvider extends PanelProvider
             ->path('company')
             ->login()
             ->databaseNotifications(
+                    condition: true,
                     livewireComponent: \App\Livewire\Notifications\CompanyDatabaseNotifications::class
                 )
             // ─── Branding dinámico por tenant ────────────
