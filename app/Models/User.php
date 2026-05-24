@@ -88,14 +88,13 @@ class User extends Authenticatable implements HasTenants, FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($panel->getId() === 'admin') {
-            return $this->hasRole('super_admin');
-        }
-
-        if ($panel->getId() === 'company') {
-            return $this->company()->count() > 0;
-        }
-
-        return false;
+        // Delegamos el rechazo de acceso a los middlewares (SetUserSuperAdmin y CheckCompanyAccess)
+        // Devolvemos true aquí para evitar el error 403 (Forbidden) por defecto de Filament 
+        // y permitir que los middlewares hagan la redirección amigable con notificación.
+        return match ($panel->getId()) {
+            'admin' => true,
+            'company' => true,
+            default => false,
+        };
     }
 }
