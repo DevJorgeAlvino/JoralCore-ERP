@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -11,6 +10,9 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\ImageColumn;
 
 class UsersTable
 {
@@ -18,18 +20,57 @@ class UsersTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nombre'),
-                TextColumn::make('email')
-                    ->label('Correo Electrónico'),
-                TextColumn::make('created_at')
-                    ->label('Creado')
-                    ->dateTime(),
-                TextColumn::make('updated_at')
-                    ->label('Actualizado')
-                    ->dateTime(),
+                Split::make([
+                    ImageColumn::make('avatar')
+                        ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=09090b')
+                        ->circular()
+                        ->grow(false),
+
+                    Stack::make([
+                        TextColumn::make('name')
+                            ->weight('bold')
+                            ->searchable()
+                            ->sortable(),
+                        
+                        TextColumn::make('email')
+                            ->color('gray')
+                            ->searchable()
+                            ->icon('heroicon-m-envelope')
+                            ->size('sm'),
+                    ])->space(1),
+                ]),
+
                 TextColumn::make('company.name')
-                    ->label('Empresa'),
+                    ->label('Empresas Asignadas')
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-m-building-office-2')
+                    ->separator(',')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('roles.name')
+                    ->label('Roles Globales')
+                    ->badge()
+                    ->color('primary')
+                    ->separator(',')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('email_verified_at')
+                    ->label('Verificado')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'success' : 'warning')
+                    ->icon(fn ($state) => $state ? 'heroicon-m-check-badge' : 'heroicon-m-exclamation-circle')
+                    ->formatStateUsing(fn ($state) => $state ? 'Sí' : 'No')
+                    ->toggleable(),
+
+                TextColumn::make('created_at')
+                    ->label('Registro')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 TrashedFilter::make(),
