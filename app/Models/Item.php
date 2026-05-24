@@ -20,7 +20,7 @@ class Item extends Model
         'slug',
         'description',
         'type',
-        'unit_code',
+        'unit_measure_id',
         'purchase_cost',
         'sale_price',
         'tax_type',
@@ -65,6 +65,6 @@ class Item extends Model
 
     public function unitMeasure(): BelongsTo
     {
-        return $this->belongsTo(UnitMeasure::class, 'unit_code', 'code');
+        return $this->belongsTo(UnitMeasure::class);
     }
 }

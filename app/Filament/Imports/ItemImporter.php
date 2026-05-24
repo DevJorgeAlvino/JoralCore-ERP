@@ -37,10 +37,10 @@ class ItemImporter extends Importer
                 ->requiredMapping()
                 ->rules(['required', 'in:product,service']),
 
-            ImportColumn::make('unit_code')
+            ImportColumn::make('unit_measure_code')
                 ->label('Cód. Unidad Medida')
                 ->guess(['unidad', 'unidad medida', 'unit', 'unit_code', 'medida'])
-                ->rules(['nullable', 'max:5']),
+                ->rules(['nullable', 'max:10']),
 
             ImportColumn::make('purchase_cost')
                 ->label('Costo de Compra')
@@ -123,6 +123,20 @@ class ItemImporter extends Importer
         if (!isset($this->data['is_active'])) {
             $item->is_active = true;
         }
+
+        // Resolver unit_measure_id desde el codigo de unidad
+        if (!empty($this->data['unit_measure_code'])) {
+            $unitMeasure = \App\Models\UnitMeasure::where('code', $this->data['unit_measure_code'])
+                ->where('company_id', $companyId)
+                ->first();
+
+            if ($unitMeasure) {
+                $item->unit_measure_id = $unitMeasure->id;
+            }
+        }
+
+        // Limpiar el campo para que no intente guardarse como columna
+        unset($this->data['unit_measure_code']);
 
         return $item;
     }

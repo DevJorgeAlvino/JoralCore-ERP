@@ -2,12 +2,10 @@
 
 namespace App\Filament\Company\Resources\Users;
 
-use App\Filament\Company\Resources\Users\Pages\CreateUser;
+use App\Filament\Company\Resources\Users\RelationManagers\RolesRelationManager;
 use App\Filament\Company\Resources\Users\Pages\EditUser;
 use App\Filament\Company\Resources\Users\Pages\ListUsers;
-use App\Filament\Company\Resources\Users\Pages\ViewUser;
 use App\Filament\Company\Resources\Users\Schemas\UserForm;
-use App\Filament\Company\Resources\Users\Schemas\UserInfolist;
 use App\Filament\Company\Resources\Users\Tables\UsersTable;
 use App\Models\User;
 use BackedEnum;
@@ -22,9 +20,14 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email'];
+    }
 
     public static function getModelLabel(): string
     {
@@ -41,11 +44,6 @@ class UserResource extends Resource
         return UserForm::configure($schema);
     }
 
-    public static function infolist(Schema $schema): Schema
-    {
-        return UserInfolist::configure($schema);
-    }
-
     public static function table(Table $table): Table
     {
         return UsersTable::configure($table);
@@ -54,7 +52,7 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RolesRelationManager::class,
         ];
     }
 
@@ -62,17 +60,22 @@ class UserResource extends Resource
     {
         return [
             'index' => ListUsers::route('/'),
-            // 'create' => CreateUser::route('/create'),
-            'view' => ViewUser::route('/{record}'),
-            'edit' => EditUser::route('/{record}/edit'),
+            'edit'  => EditUser::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $tenant = filament()->getTenant();
+
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([SoftDeletingScope::class])
+            ->when($tenant, fn ($query) => $query->whereHas('company', fn ($q) => $q->where('companies.id', $tenant->id)));
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder
     {
         return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 }

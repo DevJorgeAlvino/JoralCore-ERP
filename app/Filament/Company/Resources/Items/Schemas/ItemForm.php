@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\Items\Schemas;
+namespace App\Filament\Company\Resources\Items\Schemas;
 
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -148,14 +148,7 @@ class ItemForm
                                     ->description('Clasificación en el sistema.')
                                     ->icon('heroicon-o-building-office')
                                     ->schema([
-                                        Select::make('company_id')
-                                            ->label('Empresa Perteneciente')
-                                            ->relationship('company', 'name')
-                                            ->native(false)
-                                            ->required()
-                                            ->live()
-                                            ->visible(fn () => Filament::getTenant() === null),
-
+                                        // El company_id lo inyecta Filament automáticamente via Tenant
                                         Select::make('type')
                                             ->label('Tipo de Artículo')
                                             ->options([
@@ -169,7 +162,11 @@ class ItemForm
 
                                         Select::make('unit_measure_id')
                                             ->label('Unidad de Medida')
-                                            ->relationship('unitMeasure', 'name')
+                                            ->relationship(
+                                                name: 'unitMeasure',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: fn ($query) => $query->where('company_id', filament()->getTenant()?->id)
+                                            )
                                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
                                             ->searchable()
                                             ->preload()
