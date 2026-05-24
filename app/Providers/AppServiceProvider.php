@@ -59,18 +59,32 @@ class AppServiceProvider extends ServiceProvider
 
         // Asignar el company_id al momento de iniciar una importación para que se guarde en la BD
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportStarted::class, function ($event) {
-            $companyId = $event->options['company_id'] ?? filament()->getTenant()?->id;
+            $companyId = $event->options['company_id'] ?? null;
+            
+            // Si no viene en options, intentamos sacarlo del Tenant actual (Company Panel)
+            if (!$companyId && \Filament\Facades\Filament::hasTenant()) {
+                $companyId = filament()->getTenant()?->id;
+            }
+
             if ($companyId) {
-                // forceFill es necesario porque company_id no está en $fillable nativo de Filament
-                $event->import->forceFill(['company_id' => $companyId])->save();
+                // Usamos DB::table directo para saltar cualquier restricción del modelo interno de Filament
+                \Illuminate\Support\Facades\DB::table('imports')
+                    ->where('id', $event->import->id)
+                    ->update(['company_id' => $companyId]);
             }
         });
 
         // Asignar el company_id al momento de iniciar una exportación
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Exports\Events\ExportStarted::class, function ($event) {
-            $companyId = $event->options['company_id'] ?? filament()->getTenant()?->id;
+            $companyId = $event->options['company_id'] ?? null;
+            if (!$companyId && \Filament\Facades\Filament::hasTenant()) {
+                $companyId = filament()->getTenant()?->id;
+            }
+
             if ($companyId) {
-                $event->export->forceFill(['company_id' => $companyId])->save();
+                \Illuminate\Support\Facades\DB::table('exports')
+                    ->where('id', $event->export->id)
+                    ->update(['company_id' => $companyId]);
             }
         });
 
