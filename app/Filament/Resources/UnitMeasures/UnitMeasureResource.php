@@ -63,8 +63,8 @@ class UnitMeasureResource extends Resource
         return [
             'index' => ListUnitMeasures::route('/'),
             // 'create' => CreateUnitMeasure::route('/create'),
-            // 'view' => ViewUnitMeasure::route('/{record}'),
-            // 'edit' => EditUnitMeasure::route('/{record}/edit'),
+            'view' => ViewUnitMeasure::route('/{record}'),
+            'edit' => EditUnitMeasure::route('/{record}/edit'),
         ];
     }
 
