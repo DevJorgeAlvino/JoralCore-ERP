@@ -50,7 +50,11 @@ class AppServiceProvider extends ServiceProvider
 
         \BezhanSalleh\LanguageSwitch\LanguageSwitch::configureUsing(function (\BezhanSalleh\LanguageSwitch\LanguageSwitch $switch) {
             $switch
-                ->locales(['es', 'en']); // Renderiza idiomas con sus banderas por defecto
+                ->locales(['es', 'en'])
+                ->flags([
+                    'es' => 'https://flagcdn.com/w40/es.png',
+                    'en' => 'https://flagcdn.com/w40/us.png',
+                ]); 
         });
         
     }
