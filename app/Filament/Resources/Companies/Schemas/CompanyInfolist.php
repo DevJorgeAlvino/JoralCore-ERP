@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Companies\Schemas;
 
 use App\Models\Company;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Group;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
@@ -24,7 +24,6 @@ class CompanyInfolist
                                 TextEntry::make('name')
                                     ->label(__('companies.fields.name'))
                                     ->icon('heroicon-m-building-office')
-                                    ->size(TextEntry\TextEntrySize::Large)
                                     ->weight('bold'),
 
                                 TextEntry::make('slug')

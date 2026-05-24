@@ -14,7 +14,6 @@ class ListCompanies extends ListRecords
     {
         return [
             CreateAction::make()
-                ->slideOver()
                 ->modalWidth('4xl'),
         ];
     }
