@@ -61,7 +61,8 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportStarted::class, function ($event) {
             $companyId = $event->options['company_id'] ?? filament()->getTenant()?->id;
             if ($companyId) {
-                $event->import->update(['company_id' => $companyId]);
+                // forceFill es necesario porque company_id no está en $fillable nativo de Filament
+                $event->import->forceFill(['company_id' => $companyId])->save();
             }
         });
 
@@ -69,7 +70,14 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Exports\Events\ExportStarted::class, function ($event) {
             $companyId = $event->options['company_id'] ?? filament()->getTenant()?->id;
             if ($companyId) {
-                $event->export->update(['company_id' => $companyId]);
+                $event->export->forceFill(['company_id' => $companyId])->save();
+            }
+        });
+
+        // Heredar el company_id de la importación a cada fila fallida
+        \Filament\Actions\Imports\Models\FailedImportRow::creating(function ($model) {
+            if ($model->import && $model->import->company_id) {
+                $model->company_id = $model->import->company_id;
             }
         });
 

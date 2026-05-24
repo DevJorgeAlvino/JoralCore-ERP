@@ -102,9 +102,11 @@ class ItemImporter extends Importer
         // O a través del Tenant Activo (Company Panel)
         $companyId = $this->options['company_id'] ?? filament()->getTenant()?->id;
 
-        if ($companyId) {
-            $item->company_id = $companyId;
+        if (!$companyId) {
+            throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('No se ha podido asignar una Empresa (Tenant) a este ítem.');
         }
+
+        $item->company_id = $companyId;
 
         // Configuración por defecto si no vienen en el archivo
         if (!isset($this->data['manage_stock'])) {
@@ -115,6 +117,17 @@ class ItemImporter extends Importer
         }
 
         return $item;
+    }
+
+    public function saveRecord(): void
+    {
+        try {
+            parent::saveRecord();
+        } catch (\Illuminate\Database\QueryException $e) {
+            throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('Error de base de datos: ' . $e->errorInfo[2]);
+        } catch (\Throwable $e) {
+            throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('Error interno: ' . $e->getMessage());
+        }
     }
 
     public static function getCompletedNotificationBody(Import $import): string
