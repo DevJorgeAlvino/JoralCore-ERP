@@ -48,6 +48,10 @@ class AppServiceProvider extends ServiceProvider
             return $isSuperAdmin ? true : null;
         });
 
+        \BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch::configureUsing(function (\BezhanSalleh\FilamentLanguageSwitch\LanguageSwitch $switch) {
+            $switch
+                ->locales(['es', 'en']); // Renderiza idiomas con sus banderas por defecto
+        });
         
     }
 
