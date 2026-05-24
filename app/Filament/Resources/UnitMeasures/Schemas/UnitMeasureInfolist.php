@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\UnitMeasures\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\Grid;
 use Filament\Schemas\Schema;
 
 class UnitMeasureInfolist
@@ -11,16 +13,40 @@ class UnitMeasureInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('code'),
-                TextEntry::make('name'),
-                TextEntry::make('country')
-                    ->placeholder('-'),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
+                Section::make(__('unit_measures.sections.general'))
+                    ->description(__('unit_measures.sections.general_desc'))
+                    ->icon('heroicon-o-information-circle')
+                    ->schema([
+                        Grid::make(2)->schema([
+                            TextEntry::make('code')
+                                ->label(__('unit_measures.fields.code'))
+                                ->icon('heroicon-o-hashtag')
+                                ->weight('bold')
+                                ->color('primary'),
+                            TextEntry::make('name')
+                                ->label(__('unit_measures.fields.name'))
+                                ->icon('heroicon-o-beaker'),
+                            TextEntry::make('country')
+                                ->label(__('unit_measures.fields.country'))
+                                ->icon('heroicon-o-globe-alt')
+                                ->placeholder('-')
+                                ->columnSpanFull(),
+                        ]),
+                    ])->collapsible(),
+                Section::make('Auditoría')
+                    ->icon('heroicon-o-clock')
+                    ->schema([
+                        Grid::make(2)->schema([
+                            TextEntry::make('created_at')
+                                ->label(__('unit_measures.fields.created_at'))
+                                ->dateTime()
+                                ->placeholder('-'),
+                            TextEntry::make('updated_at')
+                                ->label(__('unit_measures.fields.updated_at'))
+                                ->dateTime()
+                                ->placeholder('-'),
+                        ]),
+                    ])->collapsed(),
             ]);
     }
 }

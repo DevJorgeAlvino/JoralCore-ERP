@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\UnitMeasures\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
 use Filament\Schemas\Schema;
 
 class UnitMeasureForm
@@ -11,9 +13,28 @@ class UnitMeasureForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->required(),
-                TextInput::make('country'),
+                Section::make(__('unit_measures.sections.general'))
+                    ->description(__('unit_measures.sections.general_desc'))
+                    ->icon('heroicon-o-information-circle')
+                    ->schema([
+                        Grid::make(2)->schema([
+                            TextInput::make('code')
+                                ->label(__('unit_measures.fields.code'))
+                                ->required()
+                                ->maxLength(255)
+                                ->prefixIcon('heroicon-o-hashtag'),
+                            TextInput::make('name')
+                                ->label(__('unit_measures.fields.name'))
+                                ->required()
+                                ->maxLength(255)
+                                ->prefixIcon('heroicon-o-beaker'),
+                            TextInput::make('country')
+                                ->label(__('unit_measures.fields.country'))
+                                ->maxLength(255)
+                                ->prefixIcon('heroicon-o-globe-alt')
+                                ->columnSpanFull(),
+                        ]),
+                    ])->collapsible(),
             ]);
     }
 }

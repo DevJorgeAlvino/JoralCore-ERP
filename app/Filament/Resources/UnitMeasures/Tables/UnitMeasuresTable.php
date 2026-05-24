@@ -19,16 +19,30 @@ class UnitMeasuresTable
         return $table
             ->columns([
                 TextColumn::make('code')
-                    ->searchable(),
+                    ->label(__('unit_measures.fields.code'))
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold')
+                    ->color('primary')
+                    ->icon('heroicon-o-hashtag'),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label(__('unit_measures.fields.name'))
+                    ->searchable()
+                    ->sortable()
+                    ->icon('heroicon-o-beaker'),
                 TextColumn::make('country')
-                    ->searchable(),
+                    ->label(__('unit_measures.fields.country'))
+                    ->searchable()
+                    ->sortable()
+                    ->icon('heroicon-o-globe-alt')
+                    ->toggleable(),
                 TextColumn::make('created_at')
+                    ->label(__('unit_measures.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('unit_measures.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

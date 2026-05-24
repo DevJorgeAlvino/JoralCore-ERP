@@ -24,7 +24,17 @@ class UnitMeasureResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'UnitMeasure';
+    protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getModelLabel(): string
+    {
+        return __('unit_measures.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('unit_measures.title');
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -53,8 +63,8 @@ class UnitMeasureResource extends Resource
         return [
             'index' => ListUnitMeasures::route('/'),
             // 'create' => CreateUnitMeasure::route('/create'),
-            'view' => ViewUnitMeasure::route('/{record}'),
-            'edit' => EditUnitMeasure::route('/{record}/edit'),
+            // 'view' => ViewUnitMeasure::route('/{record}'),
+            // 'edit' => EditUnitMeasure::route('/{record}/edit'),
         ];
     }
 
