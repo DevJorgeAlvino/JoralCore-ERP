@@ -170,36 +170,11 @@ class ItemImporter extends Importer
      */
     public static function modifyCompletedNotification(\Filament\Notifications\Notification $notification, Import $import): \Filament\Notifications\Notification
     {
-        // La notificación de Filament almacena su data internamente.
-        // Usamos el observer en AppServiceProvider que intercepta DatabaseNotification::creating.
-        // Para el caso del background job, necesitamos forzar el company_id directamente
-        // en la bd despues de que se guarde. Usamos el evento NotificationSent de Laravel.
-
-        // Registramos un listener one-time para capturar la notificación que está a punto de guardarse
-        $companyId = $import->company_id;
-
-        if ($companyId) {
-            \Illuminate\Support\Facades\Event::listen(
-                \Illuminate\Notifications\Events\NotificationSent::class,
-                function ($event) use ($companyId) {
-                    try {
-                        // Buscamos la última notificación del usuario y le aplicamos company_id
-                        $dbNotification = \Illuminate\Notifications\DatabaseNotification::where('notifiable_id', $event->notifiable->getKey())
-                            ->latest()
-                            ->first();
-
-                        if ($dbNotification) {
-                            $data = $dbNotification->data ?? [];
-                            if (($data['format'] ?? '') === 'filament' && !isset($data['company_id'])) {
-                                $data['company_id'] = $companyId;
-                                $dbNotification->update(['data' => $data]);
-                            }
-                        }
-                    } catch (\Throwable) {
-                        // Silencioso
-                    }
-                }
-            );
+        // Pasamos el company_id a través de viewData para que el observer
+        // DatabaseNotification::creating en AppServiceProvider lo capture y
+        // lo coloque en la raíz del JSON, filtrando correctamente la notificación.
+        if ($import->company_id) {
+            $notification->viewData(['company_id' => $import->company_id]);
         }
 
         return $notification;

@@ -163,23 +163,30 @@ class AppServiceProvider extends ServiceProvider
                     return;
                 }
 
-                // Intentamos obtener el Tenant activo (contexto HTTP)
+                // Intentamos obtener el company_id inyectado explícitamente desde viewData (ej. background jobs)
                 $companyId = null;
-
-                if (app()->bound('filament')) {
-                    try {
-                        $panel = \Filament\Facades\Filament::getCurrentPanel();
-                        if ($panel && $panel->getId() === 'company') {
-                            $companyId = \Filament\Facades\Filament::getTenant()?->id;
+                
+                if (isset($data['viewData']['company_id'])) {
+                    $companyId = $data['viewData']['company_id'];
+                    unset($data['viewData']['company_id']); // Limpiamos para no ensuciar el payload
+                } else {
+                    // Intentamos obtener el Tenant activo (contexto HTTP)
+                    if (app()->bound('filament')) {
+                        try {
+                            $panel = \Filament\Facades\Filament::getCurrentPanel();
+                            if ($panel && $panel->getId() === 'company') {
+                                $companyId = \Filament\Facades\Filament::getTenant()?->id;
+                            }
+                        } catch (\Throwable) {
+                            // No hay contexto HTTP (background job) - dejamos null
                         }
-                    } catch (\Throwable) {
-                        // No hay contexto HTTP (background job) - dejamos null
                     }
                 }
 
-                // Inyectamos en el arreglo data
+                // Inyectamos en el arreglo data y en la columna física
                 $data['company_id'] = $companyId;
                 $notification->data = $data;
+                $notification->company_id = $companyId;
 
             } catch (\Throwable) {
                 // Si algo falla, no bloqueamos la notificación
@@ -197,15 +204,10 @@ class AppServiceProvider extends ServiceProvider
                         if ($panel->getId() === 'company') {
                             // Panel Company: solo notificaciones de este tenant
                             $companyId = \Filament\Facades\Filament::getTenant()?->id;
-                            $query->where(function($q) use ($companyId) {
-                                $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.company_id')) = ?", [$companyId]);
-                            });
+                            $query->where('company_id', $companyId);
                         } elseif ($panel->getId() === 'admin') {
                             // Panel Admin: solo notificaciones globales (sin company_id)
-                            $query->where(function($q) {
-                                $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.company_id')) IS NULL")
-                                  ->orWhereRaw("JSON_EXTRACT(data, '$.company_id') IS NULL");
-                            });
+                            $query->whereNull('company_id');
                         }
                     }
                 } catch (\Throwable $e) {
