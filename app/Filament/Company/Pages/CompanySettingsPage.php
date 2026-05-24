@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Storage;
 
 class CompanySettingsPage extends Page
 {
+    use \BezhanSalleh\FilamentShield\Traits\HasPageShield;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     public static function getNavigationLabel(): string
