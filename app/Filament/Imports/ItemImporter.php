@@ -165,6 +165,17 @@ class ItemImporter extends Importer
     }
 
     /**
+     * Middleware de Queue para evitar que una misma empresa ejecute múltiples importaciones simultáneas.
+     * Si envían otra mientras hay una procesando, se encola y espera 60 segundos antes de reintentar.
+     */
+    public function getJobMiddleware(): array
+    {
+        return [
+            (new \Illuminate\Queue\Middleware\WithoutOverlapping($this->import->company_id))->releaseAfter(60),
+        ];
+    }
+
+    /**
      * Inyecta el company_id en la notificación de completado para que el filtro
      * por empresa funcione incluso cuando el job corre en background (sin contexto HTTP).
      */
