@@ -46,9 +46,15 @@ class CompanyForm
                                     ->prefixIcon('heroicon-m-link')
                                     ->helperText('Identificador URL único. Se genera automáticamente.'),
 
+                                \Filament\Forms\Components\Toggle::make('is_active')
+                                    ->label('Cuenta Activa')
+                                    ->default(true)
+                                    ->columnSpanFull()
+                                    ->helperText('Permite el acceso de esta empresa al sistema.'),
+
                                 Textarea::make('description')
                                     ->label(__('companies.fields.description'))
-                                    ->rows(3)
+                                    ->rows(2)
                                     ->maxLength(500)
                                     ->columnSpanFull(),
                             ]),
@@ -91,6 +97,31 @@ class CompanyForm
                                     ->helperText(fn (Get $get): string => $get('country') === 'CL'
                                         ? 'Código de actividad económica SII.'
                                         : 'Código CIIU registrado en SUNAT.'),
+
+                                Select::make('tax_regime')
+                                    ->label('Régimen Tributario')
+                                    ->options(fn (Get $get) => $get('country') === 'CL' 
+                                        ? ['propyme' => 'ProPyme', 'general' => 'Régimen General']
+                                        : ['mype' => 'MYPE Tributario', 'especial' => 'Régimen Especial', 'general' => 'Régimen General']
+                                    )
+                                    ->native(false)
+                                    ->prefixIcon('heroicon-m-document-currency-dollar'),
+
+                                \Filament\Forms\Components\Toggle::make('is_retention_agent')
+                                    ->label('Agente de Retención')
+                                    ->default(false)
+                                    ->inline(false)
+                                    ->helperText('Marca si la empresa retiene IGV/IVA.'),
+
+                                TextInput::make('legal_rep_name')
+                                    ->label('Representante Legal (Nombre)')
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-user-circle'),
+
+                                TextInput::make('legal_rep_document')
+                                    ->label('Representante Legal (Documento)')
+                                    ->maxLength(20)
+                                    ->prefixIcon('heroicon-m-identification'),
                             ]),
                         ]),
 
@@ -128,6 +159,14 @@ class CompanyForm
                                     ->email()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-envelope'),
+
+                                TextInput::make('website')
+                                    ->label('Sitio Web')
+                                    ->url()
+                                    ->maxLength(255)
+                                    ->prefixIcon('heroicon-m-globe-alt')
+                                    ->placeholder('https://www.empresa.com')
+                                    ->columnSpanFull(),
                             ]),
                         ]),
                 ])->columnSpan(['lg' => 2]),

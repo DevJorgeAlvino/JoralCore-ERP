@@ -14,7 +14,7 @@ class ListCompanies extends ListRecords
     {
         return [
             CreateAction::make()
-                ->modalWidth('4xl'),
+                ->modalWidth('7xl'),
         ];
     }
 }

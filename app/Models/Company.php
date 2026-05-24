@@ -29,6 +29,12 @@ class Company extends Model
         'geo_code',
         'phone',
         'email',
+        'is_active',
+        'tax_regime',
+        'website',
+        'legal_rep_name',
+        'legal_rep_document',
+        'is_retention_agent',
     ];
 
     /**

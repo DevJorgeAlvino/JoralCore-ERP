@@ -32,6 +32,11 @@ class CompanyInfolist
                                     ->icon('heroicon-m-link')
                                     ->color('gray'),
 
+                                \Filament\Infolists\Components\IconEntry::make('is_active')
+                                    ->label('Cuenta Activa')
+                                    ->boolean()
+                                    ->columnSpanFull(),
+
                                 TextEntry::make('description')
                                     ->label(__('companies.fields.description'))
                                     ->placeholder('Sin descripción.')
@@ -67,6 +72,26 @@ class CompanyInfolist
                                         : 'Código CIIU')
                                     ->icon('heroicon-m-briefcase')
                                     ->placeholder('No registrado.'),
+
+                                TextEntry::make('tax_regime')
+                                    ->label('Régimen Tributario')
+                                    ->badge()
+                                    ->icon('heroicon-m-document-currency-dollar')
+                                    ->placeholder('No registrado.'),
+
+                                \Filament\Infolists\Components\IconEntry::make('is_retention_agent')
+                                    ->label('Agente de Retención')
+                                    ->boolean(),
+
+                                TextEntry::make('legal_rep_name')
+                                    ->label('Representante Legal')
+                                    ->icon('heroicon-m-user-circle')
+                                    ->placeholder('No registrado.'),
+
+                                TextEntry::make('legal_rep_document')
+                                    ->label('Doc. Representante')
+                                    ->icon('heroicon-m-identification')
+                                    ->placeholder('No registrado.'),
                             ]),
                         ]),
 
@@ -96,6 +121,13 @@ class CompanyInfolist
                                     ->icon('heroicon-o-envelope')
                                     ->copyable()
                                     ->placeholder('No registrado.'),
+
+                                TextEntry::make('website')
+                                    ->label('Sitio Web')
+                                    ->icon('heroicon-m-globe-alt')
+                                    ->url(fn (Company $record): ?string => $record->website)
+                                    ->placeholder('No registrado.')
+                                    ->columnSpanFull(),
                             ]),
                         ]),
                 ])->columnSpan(['lg' => 2]),
