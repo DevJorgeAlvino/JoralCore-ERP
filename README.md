@@ -1,28 +1,42 @@
-# 🚀 JoralCore - SaaS Multi-Tenancy System
+# 🚀 JoralCore ERP - SaaS Multi-Tenancy System
 
 ![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![Filament](https://img.shields.io/badge/Filament-3.x-F2C14E?style=for-the-badge&logo=livewire&logoColor=black)
-![PHP](https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-**JoralCore** es una plataforma SaaS robusta diseñada para la gestión empresarial multi-empresa (Multi-Tenancy). Construida con la potencia de Laravel y la elegancia de FilamentPHP, incluye gestión avanzada de roles (Shield), separación de datos por inquilino y una arquitectura escalable.
+**JoralCore ERP** es una plataforma robusta diseñada para la gestión empresarial multi-empresa (Multi-Tenancy). Construida con la potencia de Laravel 11, FilamentPHP v3 y React/Inertia, incluye una arquitectura escalable con separación de datos por inquilino y personalización dinámica.
 
 ---
 
-## ✨ Características Principales
+## ✨ Características y Módulos Principales (Estado Actual)
 
-* 🏢 **Arquitectura Multi-Tenant:** Aislamiento total de datos por empresa.
-* 🛡️ **Seguridad Avanzada:** Gestión de roles y permisos granulares con Filament Shield.
-* 👤 **Paneles Separados:**
-    * **Admin Panel:** Para la gestión global del SaaS (Super Admin).
-    * **Company Panel:** Entorno exclusivo para cada empresa y sus empleados.
-* ⚡ **Stack Moderno:** Laravel 11 + Livewire + Tailwind CSS + Vite.
+### 🏢 1. Arquitectura Multi-Tenant y Paneles Separados
+* **Aislamiento Total de Datos:** Estructura de base de datos preparada para separar la información por empresa.
+* **Admin Panel (Super Admin):** Panel de control global para la gestión general del SaaS, clientes y configuraciones del sistema.
+* **Company Panel (Inquilino):** Entorno exclusivo para cada empresa y sus empleados.
+
+### 🎨 2. Branding Dinámico Multi-Tenant
+* **Personalización en Tiempo Real:** Cada empresa puede configurar su propia identidad visual desde su panel.
+* **Logotipos y Favicon:** Subida y renderizado de logos específicos por inquilino.
+* **Colores Dinámicos:** Personalización de colores primarios y secundarios que sobreescriben la configuración global de Filament mediante middlewares.
+
+### 📦 3. Maestro de Ítems (Inventario Clínico)
+* **Gestión de Ítems y Unidades de Medida:** Recursos completos para catalogar productos o servicios.
+* **Galería Multi-Imagen:** Sistema avanzado de subida de imágenes para cada ítem, organizadas en galerías clínicas inferiores.
+* **Almacenamiento Estructurado:** Movimiento perfecto de archivos desde almacenamiento temporal hacia rutas definitivas (`companies/{company_id}/items/{item_id}/images`) compatible con discos locales o Cloudflare R2.
+
+### 🛡️ 4. Seguridad y Roles
+* **Filament Shield:** Gestión granular de roles y permisos para usuarios, permitiendo definir accesos detallados dentro de cada panel.
+
+### 🖥️ 5. Landing Page e Interfaz de Usuario
+* **Welcome Page Renovado:** Página de inicio (Landing) desarrollada en React (Inertia.js) con un diseño minimalista, efectos "glassmorphism", responsividad (incluyendo vista apaisada para móviles) y flujos de navegación claros hacia los portales de Admin y Compañía.
+* **Localización (i18n):** Archivos de idioma configurados para soportar traducciones en toda la aplicación.
 
 ---
 
 ## 🛠️ Requisitos del Sistema
 
-Antes de comenzar, asegúrate de tener instalado:
 * PHP 8.2 o superior
 * Composer
 * Node.js & NPM
@@ -31,34 +45,35 @@ Antes de comenzar, asegúrate de tener instalado:
 
 ---
 
-## 📥 Instalación (Despliegue Rápido)
-
-Sigue estos 3 pasos sencillos para levantar el proyecto desde cero en cualquier entorno.
+## 📥 Instalación
 
 ### 1. Clonar el Repositorio
 ```bash
-git clone https://github.com/DevJorgeAlvino/JoralCore-Multi-Tenancy.git JoralCore-Multi-Tenancy
-cd JoralCore-Multi-Tenancy
+git clone https://github.com/DevJorgeAlvino/JoralCore-ERP.git JoralCore-ERP
+cd JoralCore-ERP
 ```
 
-### 2. Ejecutar el script de instalación
+### 2. Configuración y Dependencias
+Ejecuta el script de preparación rápida:
 ```bash
 sh joralcore.sh
 ```
 
-### 3. Configurar las credenciales de la bd en el archivo .env
-```bash
+### 3. Configurar Base de Datos (`.env`)
+Configura tus credenciales en el archivo `.env`:
+```env
 DB_CONNECTION=mysql
-DB_HOST=127.0.0.1 <- direccion de la base de datos
-DB_PORT=3306 <- puerto de la base de datos
-DB_DATABASE=laravel <- nombre de la base de datos
-DB_USERNAME=root <- usuario de la base de datos
-DB_PASSWORD=root <- contraseña de la base de datos
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=joralcore_erp
+DB_USERNAME=root
+DB_PASSWORD=root
 ```
 
-### 4. Ejecutar el comando joral:install
+### 4. Instalación de JoralCore
 ```bash
 php artisan joral:install --force
 ```
 
-### 5. Y listo inicializa el proyecto
+---
+*Documentación actualizada automáticamente reflejando las últimas implementaciones.*
