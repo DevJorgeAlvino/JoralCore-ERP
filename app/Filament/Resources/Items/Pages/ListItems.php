@@ -15,6 +15,22 @@ class ListItems extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Filament\Actions\ImportAction::make()
+                ->importer(\App\Filament\Imports\ItemImporter::class)
+                ->label('Importar Ítems')
+                ->modalDescription('El sistema procesa y mapea nativamente archivos CSV para asegurar un rendimiento óptimo. Si usas Excel, guarda tu archivo como .csv antes de subirlo.')
+                ->icon('heroicon-o-arrow-up-tray')
+                ->color('info')
+                ->form([
+                    \Filament\Forms\Components\Select::make('company_id')
+                        ->label('Empresa Destino')
+                        ->options(\App\Models\Company::pluck('name', 'id'))
+                        ->required()
+                        ->searchable()
+                        // Solo se muestra en el panel de Administración
+                        ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()->getId() === 'admin'),
+                ]),
+
             CreateAction::make()
                 ->modalWidth('7xl')
                 ->extraModalWindowAttributes(['novalidate' => true])
