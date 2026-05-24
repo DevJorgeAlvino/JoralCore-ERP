@@ -78,33 +78,6 @@ class CompanyInfolist
                                     ->label(__('companies.fields.timezone'))
                                     ->icon('heroicon-o-clock'),
                             ]),
-
-                        // ─── Metadatos del Registro ──────────────────
-                        Section::make('Metadatos')
-                            ->icon('heroicon-o-information-circle')
-                            ->collapsed()
-                            ->schema([
-                                TextEntry::make('id')
-                                    ->label('ID (ULID)')
-                                    ->copyable()
-                                    ->badge()
-                                    ->color('gray'),
-
-                                TextEntry::make('created_at')
-                                    ->label(__('companies.fields.created_at'))
-                                    ->dateTime()
-                                    ->placeholder('-'),
-
-                                TextEntry::make('updated_at')
-                                    ->label(__('companies.fields.updated_at'))
-                                    ->dateTime()
-                                    ->placeholder('-'),
-
-                                TextEntry::make('deleted_at')
-                                    ->label(__('companies.fields.deleted_at'))
-                                    ->dateTime()
-                                    ->visible(fn (Company $record): bool => $record->trashed()),
-                            ]),
                     ])->columnSpan(['lg' => 1]),
 
                 // ─── Información Legal y Tributaria ──────────
@@ -193,6 +166,36 @@ class CompanyInfolist
                                 ->icon('heroicon-m-globe-alt')
                                 ->url(fn (Company $record): ?string => $record->website)
                                 ->placeholder('No registrado.'),
+                        ]),
+                    ]),
+
+                // ─── Metadatos del Registro ──────────────────
+                Section::make('Metadatos')
+                    ->icon('heroicon-o-information-circle')
+                    ->collapsed()
+                    ->columnSpanFull()
+                    ->schema([
+                        Grid::make(4)->schema([
+                            TextEntry::make('id')
+                                ->label('ID (ULID)')
+                                ->copyable()
+                                ->badge()
+                                ->color('gray'),
+
+                            TextEntry::make('created_at')
+                                ->label(__('companies.fields.created_at'))
+                                ->dateTime()
+                                ->placeholder('-'),
+
+                            TextEntry::make('updated_at')
+                                ->label(__('companies.fields.updated_at'))
+                                ->dateTime()
+                                ->placeholder('-'),
+
+                            TextEntry::make('deleted_at')
+                                ->label(__('companies.fields.deleted_at'))
+                                ->dateTime()
+                                ->visible(fn (Company $record): bool => $record->trashed()),
                         ]),
                     ]),
             ])
