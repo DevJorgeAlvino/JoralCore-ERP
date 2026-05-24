@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\UnitMeasures\Schemas;
 
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Grid;
 use Filament\Schemas\Schema;
 
 class UnitMeasureInfolist
@@ -32,7 +32,7 @@ class UnitMeasureInfolist
                                 ->placeholder('-')
                                 ->columnSpanFull(),
                         ]),
-                    ])->collapsible(),
+                    ])->collapsible()->columnSpanFull(),
                 Section::make('Auditoría')
                     ->icon('heroicon-o-clock')
                     ->schema([
@@ -46,7 +46,7 @@ class UnitMeasureInfolist
                                 ->dateTime()
                                 ->placeholder('-'),
                         ]),
-                    ])->collapsed(),
+                    ])->collapsed()->columnSpanFull(),
             ]);
     }
 }

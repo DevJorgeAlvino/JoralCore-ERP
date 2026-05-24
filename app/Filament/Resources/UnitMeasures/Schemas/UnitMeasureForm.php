@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\UnitMeasures\Schemas;
 
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class UnitMeasureForm
@@ -34,7 +34,7 @@ class UnitMeasureForm
                                 ->prefixIcon('heroicon-o-globe-alt')
                                 ->columnSpanFull(),
                         ]),
-                    ])->collapsible(),
+                    ])->collapsible()->columnSpanFull(),
             ]);
     }
 }
