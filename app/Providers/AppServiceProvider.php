@@ -57,6 +57,22 @@ class AppServiceProvider extends ServiceProvider
                 ]); 
         });
 
+        // Asignar el company_id al momento de iniciar una importación para que se guarde en la BD
+        \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportStarted::class, function ($event) {
+            $companyId = $event->options['company_id'] ?? filament()->getTenant()?->id;
+            if ($companyId) {
+                $event->import->update(['company_id' => $companyId]);
+            }
+        });
+
+        // Asignar el company_id al momento de iniciar una exportación
+        \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Exports\Events\ExportStarted::class, function ($event) {
+            $companyId = $event->options['company_id'] ?? filament()->getTenant()?->id;
+            if ($companyId) {
+                $event->export->update(['company_id' => $companyId]);
+            }
+        });
+
         // Subir archivo a Cloudflare R2 solo cuando la importación de ítems finalice correctamente
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportCompleted::class, function ($event) {
             $import = $event->import;
