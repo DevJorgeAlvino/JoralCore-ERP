@@ -46,6 +46,12 @@ class CompanyForm
                                         ->prefixIcon('heroicon-m-link')
                                         ->helperText('Identificador URL único. Se genera automáticamente.'),
 
+                                    \Filament\Forms\Components\Toggle::make('is_active')
+                                        ->label('Cuenta Activa')
+                                        ->default(true)
+                                        ->columnSpanFull()
+                                        ->helperText('Permite el acceso de esta empresa al sistema.'),
+
                                     Textarea::make('description')
                                         ->label(__('companies.fields.description'))
                                         ->rows(2)
@@ -56,16 +62,6 @@ class CompanyForm
                     ])->columnSpan(['lg' => 2]),
 
                     Group::make()->schema([
-                        // ─── Estado de la Cuenta ─────────────────────
-                        Section::make('Estado del Tenant')
-                            ->icon('heroicon-o-shield-check')
-                            ->schema([
-                                \Filament\Forms\Components\Toggle::make('is_active')
-                                    ->label('Cuenta Activa')
-                                    ->default(true)
-                                    ->helperText('Permite el acceso de esta empresa al sistema ERP.'),
-                            ]),
-
                         // ─── Localización y Configuración Regional ───
                         Section::make(__('companies.sections.localization'))
                             ->description('Moneda y zona horaria.')

@@ -32,6 +32,11 @@ class CompanyInfolist
                                         ->icon('heroicon-m-link')
                                         ->color('gray'),
 
+                                    \Filament\Infolists\Components\IconEntry::make('is_active')
+                                        ->label('Cuenta Activa')
+                                        ->boolean()
+                                        ->columnSpanFull(),
+
                                     TextEntry::make('description')
                                         ->label(__('companies.fields.description'))
                                         ->placeholder('Sin descripción.')
@@ -41,15 +46,6 @@ class CompanyInfolist
                     ])->columnSpan(['lg' => 2]),
 
                     Group::make()->schema([
-                        // ─── Estado de la Cuenta ─────────────────────
-                        Section::make('Estado del Tenant')
-                            ->icon('heroicon-o-shield-check')
-                            ->schema([
-                                \Filament\Infolists\Components\IconEntry::make('is_active')
-                                    ->label('Cuenta Activa')
-                                    ->boolean(),
-                            ]),
-
                         // ─── Localización y Configuración Regional ───
                         Section::make(__('companies.sections.localization'))
                             ->icon('heroicon-o-globe-americas')
