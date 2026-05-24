@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'title' => 'Empresas',
+    'single' => 'Empresa',
+    'fields' => [
+        'name' => 'Nombre Comercial',
+        'slug' => 'Slug',
+        'description' => 'Descripción',
+        'country' => 'País',
+        'currency' => 'Moneda Base',
+        'timezone' => 'Zona Horaria',
+        'legal_name' => 'Razón Social',
+        'identity_document' => 'Documento de Identidad',
+        'dv' => 'Dígito Verificador',
+        'economic_activity_code' => 'Código Actividad Económica',
+        'tax_address' => 'Dirección Fiscal',
+        'geo_code' => 'Código de Ubicación',
+        'phone' => 'Teléfono Corporativo',
+        'email' => 'Correo Corporativo',
+        'created_at' => 'Fecha de Creación',
+        'updated_at' => 'Fecha de Actualización',
+        'deleted_at' => 'Fecha de Eliminación',
+    ],
+    'sections' => [
+        'commercial' => 'Información Comercial',
+        'commercial_desc' => 'Datos de identificación interna de la empresa.',
+        'localization' => 'Localización y Configuración Regional',
+        'localization_desc' => 'País de operación, moneda y zona horaria.',
+        'legal' => 'Información Legal y Tributaria',
+        'legal_desc' => 'Razón social y documentos tributarios para facturación electrónica.',
+        'contact' => 'Dirección Fiscal y Contacto',
+        'contact_desc' => 'Domicilio legal y datos de contacto corporativo.',
+    ],
+];

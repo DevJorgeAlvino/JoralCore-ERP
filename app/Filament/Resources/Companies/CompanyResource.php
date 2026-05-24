@@ -28,6 +28,16 @@ class CompanyResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getModelLabel(): string
+    {
+        return __('companies.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('companies.title');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CompanyForm::configure($schema);

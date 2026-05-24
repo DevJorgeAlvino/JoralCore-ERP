@@ -22,18 +22,23 @@ class CompaniesTable
                     ->label('ID')
                     ->searchable(),
                 TextColumn::make('name')
+                    ->label(__('companies.fields.name'))
                     ->searchable(),
                 TextColumn::make('slug')
+                    ->label(__('companies.fields.slug'))
                     ->searchable(),
                 TextColumn::make('created_at')
+                    ->label(__('companies.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label(__('companies.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
+                    ->label(__('companies.fields.deleted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

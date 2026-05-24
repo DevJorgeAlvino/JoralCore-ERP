@@ -31,6 +31,16 @@ class ItemResource extends Resource
         return ['name', 'sku', 'barcode'];
     }
 
+    public static function getModelLabel(): string
+    {
+        return __('items.single');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('items.title');
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ItemForm::configure($schema);

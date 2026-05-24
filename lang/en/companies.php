@@ -1,0 +1,35 @@
+<?php
+
+return [
+    'title' => 'Companies',
+    'single' => 'Company',
+    'fields' => [
+        'name' => 'Trade Name',
+        'slug' => 'Slug',
+        'description' => 'Description',
+        'country' => 'Country',
+        'currency' => 'Base Currency',
+        'timezone' => 'Timezone',
+        'legal_name' => 'Legal Name',
+        'identity_document' => 'Tax ID',
+        'dv' => 'Verification Digit',
+        'economic_activity_code' => 'Economic Activity Code',
+        'tax_address' => 'Tax Address',
+        'geo_code' => 'Geo Code',
+        'phone' => 'Corporate Phone',
+        'email' => 'Corporate Email',
+        'created_at' => 'Created At',
+        'updated_at' => 'Updated At',
+        'deleted_at' => 'Deleted At',
+    ],
+    'sections' => [
+        'commercial' => 'Commercial Information',
+        'commercial_desc' => 'Internal identification data of the company.',
+        'localization' => 'Localization and Regional Settings',
+        'localization_desc' => 'Country of operation, currency, and timezone.',
+        'legal' => 'Legal and Tax Information',
+        'legal_desc' => 'Legal name and tax documents for electronic billing.',
+        'contact' => 'Tax Address and Contact',
+        'contact_desc' => 'Legal address and corporate contact data.',
+    ],
+];
