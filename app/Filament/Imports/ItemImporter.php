@@ -204,3 +204,4 @@ class ItemImporter extends Importer
 
         return $notification;
     }
+}
