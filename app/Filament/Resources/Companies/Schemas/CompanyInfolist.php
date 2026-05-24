@@ -15,9 +15,8 @@ class CompanyInfolist
     {
         return $schema
             ->components([
-                Grid::make(3)->schema([
-                    Group::make()->schema([
-                        // ─── Información Comercial ───────────────────
+                Group::make()->schema([
+                    // ─── Información Comercial ───────────────────
                         Section::make(__('companies.sections.commercial'))
                             ->icon('heroicon-o-building-office-2')
                             ->schema([
@@ -111,7 +110,6 @@ class CompanyInfolist
                                     ->visible(fn (Company $record): bool => $record->trashed()),
                             ]),
                     ])->columnSpan(['lg' => 1]),
-                ]),
 
                 // ─── Información Legal y Tributaria ──────────
                 Section::make(__('companies.sections.legal'))
@@ -201,6 +199,7 @@ class CompanyInfolist
                                 ->placeholder('No registrado.'),
                         ]),
                     ]),
-            ]);
+            ])
+            ->columns(['lg' => 3]);
     }
 }

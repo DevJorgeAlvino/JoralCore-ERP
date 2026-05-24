@@ -19,9 +19,8 @@ class CompanyForm
     {
         return $schema
             ->components([
-                Grid::make(3)->schema([
-                    Group::make()->schema([
-                        // ─── Información Comercial ───────────────────
+                Group::make()->schema([
+                    // ─── Información Comercial ───────────────────
                         Section::make(__('companies.sections.commercial'))
                             ->description(__('companies.sections.commercial_desc'))
                             ->icon('heroicon-o-building-office-2')
@@ -119,7 +118,6 @@ class CompanyForm
                                     ->searchable(),
                             ]),
                     ])->columnSpan(['lg' => 1]),
-                ]),
 
                 // ─── Información Legal y Tributaria ──────────
                 Section::make(__('companies.sections.legal'))
@@ -232,6 +230,7 @@ class CompanyForm
                                 ->placeholder('https://www.empresa.com'),
                         ]),
                     ]),
-            ]);
+            ])
+            ->columns(['lg' => 3]);
     }
 }
