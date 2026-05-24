@@ -59,14 +59,16 @@ class AppServiceProvider extends ServiceProvider
 
         // Asignar el company_id al momento de iniciar una importación para que se guarde en la BD
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportStarted::class, function ($event) {
-            $companyId = $event->options['company_id'] ?? null;
+            $options = $event->getOptions();
+            $import = $event->getImport();
+            $companyId = $options['company_id'] ?? null;
             
             $hasTenancy = \Filament\Facades\Filament::hasTenancy();
             $tenantId = $hasTenancy ? filament()->getTenant()?->id : null;
 
             // Log de depuración
             \Illuminate\Support\Facades\Log::info('ImportStarted Triggered', [
-                'options' => $event->options,
+                'options' => $options,
                 'hasTenancy' => $hasTenancy,
                 'tenantId' => $tenantId,
                 'currentPanel' => \Filament\Facades\Filament::getCurrentPanel()->getId(),
@@ -80,21 +82,23 @@ class AppServiceProvider extends ServiceProvider
             if ($companyId) {
                 // Usamos DB::table directo para saltar cualquier restricción del modelo interno de Filament
                 \Illuminate\Support\Facades\DB::table('imports')
-                    ->where('id', $event->import->id)
+                    ->where('id', $import->id)
                     ->update(['company_id' => $companyId]);
             }
         });
 
         // Asignar el company_id al momento de iniciar una exportación
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Exports\Events\ExportStarted::class, function ($event) {
-            $companyId = $event->options['company_id'] ?? null;
+            $options = $event->getOptions();
+            $export = $event->getExport();
+            $companyId = $options['company_id'] ?? null;
             if (!$companyId && \Filament\Facades\Filament::hasTenancy()) {
                 $companyId = filament()->getTenant()?->id;
             }
 
             if ($companyId) {
                 \Illuminate\Support\Facades\DB::table('exports')
-                    ->where('id', $event->export->id)
+                    ->where('id', $export->id)
                     ->update(['company_id' => $companyId]);
             }
         });
@@ -108,14 +112,15 @@ class AppServiceProvider extends ServiceProvider
 
         // Subir archivo a Cloudflare R2 solo cuando la importación de ítems finalice correctamente
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportCompleted::class, function ($event) {
-            $import = $event->import;
-            $options = $event->options;
+            $import = clone $event->getImport(); // Clonar para evitar mutar estado en memoria accidentalmente
+            $options = $event->getOptions();
 
             if ($import->importer !== \App\Filament\Imports\ItemImporter::class) {
                 return;
             }
 
-            $companyId = $options['company_id'] ?? null;
+            // Aquí el company_id puede venir de options o lo podemos sacar directamente de la bd:
+            $companyId = $import->company_id ?? $options['company_id'] ?? null;
             if (!$companyId) {
                 return;
             }
