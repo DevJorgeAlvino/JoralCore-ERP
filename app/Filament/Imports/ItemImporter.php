@@ -70,6 +70,19 @@ class ItemImporter extends Importer
         ];
     }
 
+    public static function getOptionsFormComponents(): array
+    {
+        return [
+            \Filament\Forms\Components\Select::make('company_id')
+                ->label('Empresa Destino')
+                ->options(\App\Models\Company::pluck('name', 'id'))
+                ->required()
+                ->searchable()
+                // Solo se muestra en el panel de Administración
+                ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()->getId() === 'admin'),
+        ];
+    }
+
     public function resolveRecord(): ?Item
     {
         $item = new Item();
