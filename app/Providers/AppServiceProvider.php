@@ -140,7 +140,13 @@ class AppServiceProvider extends ServiceProvider
                 
                 $storage->put($r2Path, file_get_contents($filePath));
                 
-                @unlink($filePath);
+                // Actualizar la ruta del archivo en la base de datos por la URL pública
+                \Illuminate\Support\Facades\DB::table('imports')
+                    ->where('id', $import->id)
+                    ->update(['file_path' => $storage->url($r2Path)]);
+
+                // Borrar el archivo temporal del servidor
+                \Illuminate\Support\Facades\File::delete($filePath);
             }
         });
         

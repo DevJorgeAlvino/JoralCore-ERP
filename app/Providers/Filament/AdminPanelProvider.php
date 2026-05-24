@@ -39,6 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->databaseNotifications()
             ->brandName($this->getBrandName())
             ->brandLogo($this->getBrandLogo())
             ->favicon($this->getFavicon())

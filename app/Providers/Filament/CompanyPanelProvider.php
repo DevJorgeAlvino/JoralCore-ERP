@@ -35,6 +35,7 @@ class CompanyPanelProvider extends PanelProvider
             ->id('company')
             ->path('company')
             ->login()
+            ->databaseNotifications()
             // ─── Branding dinámico por tenant ────────────
             ->brandName(function () {
                 try {
