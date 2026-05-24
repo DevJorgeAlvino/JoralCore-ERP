@@ -43,6 +43,17 @@ class GlobalSettingsPage extends Page
 
     protected string $view = 'filament.pages.global-settings';
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            \Filament\Actions\Action::make('save')
+                ->label('Guardar Configuración')
+                ->action('save')
+                ->color('primary')
+                ->icon('heroicon-o-check'),
+        ];
+    }
+
     // ─── Estado del formulario ───────────────────
     public ?array $data = [];
 
