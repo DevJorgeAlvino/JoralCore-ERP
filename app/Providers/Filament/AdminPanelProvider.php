@@ -39,10 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->databaseNotifications(
-                    condition: true,
-                    livewireComponent: \App\Livewire\Notifications\AdminDatabaseNotifications::class
-                )
+            ->databaseNotifications()
             ->brandName($this->getBrandName())
             ->brandLogo($this->getBrandLogo())
             ->favicon($this->getFavicon())

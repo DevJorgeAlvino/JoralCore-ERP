@@ -28,9 +28,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Livewire\Livewire::component('company-database-notifications', \App\Livewire\Notifications\CompanyDatabaseNotifications::class);
-        \Livewire\Livewire::component('admin-database-notifications', \App\Livewire\Notifications\AdminDatabaseNotifications::class);
-        
         $this->configureDefaults();
 
         // Gate::policy(Category::class, CategoryPolicy::class);
@@ -186,6 +183,34 @@ class AppServiceProvider extends ServiceProvider
 
             } catch (\Throwable) {
                 // Si algo falla, no bloqueamos la notificación
+            }
+        });
+
+        // ─── Filtrar notificaciones al consultarlas según el panel activo ──────────
+        // Usamos un global scope para que cualquier consulta de notificaciones en la UI
+        // automáticamente excluya las de otros paneles/tenants.
+        \Illuminate\Notifications\DatabaseNotification::addGlobalScope('panel_scope', function ($query) {
+            if (app()->bound('filament')) {
+                try {
+                    $panel = \Filament\Facades\Filament::getCurrentPanel();
+                    if ($panel) {
+                        if ($panel->getId() === 'company') {
+                            // Panel Company: solo notificaciones de este tenant
+                            $companyId = \Filament\Facades\Filament::getTenant()?->id;
+                            $query->where(function($q) use ($companyId) {
+                                $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.company_id')) = ?", [$companyId]);
+                            });
+                        } elseif ($panel->getId() === 'admin') {
+                            // Panel Admin: solo notificaciones globales (sin company_id)
+                            $query->where(function($q) {
+                                $q->whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.company_id')) IS NULL")
+                                  ->orWhereRaw("JSON_EXTRACT(data, '$.company_id') IS NULL");
+                            });
+                        }
+                    }
+                } catch (\Throwable $e) {
+                    // Silencioso (ej. en jobs o consola)
+                }
             }
         });
 
