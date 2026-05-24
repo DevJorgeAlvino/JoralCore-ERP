@@ -20,7 +20,10 @@ class ListItems extends ListRecords
                 ->label('Importar Ítems')
                 ->modalDescription('El sistema procesa y mapea nativamente archivos CSV para asegurar un rendimiento óptimo. Si usas Excel, guarda tu archivo como .csv antes de subirlo.')
                 ->icon('heroicon-o-arrow-up-tray')
-                ->color('info'),
+                ->color('info')
+                // Inyectamos el company_id en las opciones AHORA (contexto HTTP con Tenant activo)
+                // Para que el job en background pueda leerlo desde $this->options['company_id']
+                ->options(['company_id' => filament()->getTenant()?->id]),
 
             CreateAction::make()
                 ->modalWidth('7xl')

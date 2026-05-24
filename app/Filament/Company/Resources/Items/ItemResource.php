@@ -67,7 +67,6 @@ class ItemResource extends Resource
     {
         return [
             'index'  => ListItems::route('/'),
-            'create' => CreateItem::route('/create'),
             'view'   => ViewItem::route('/{record}'),
             'edit'   => EditItem::route('/{record}/edit'),
         ];

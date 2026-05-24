@@ -13,7 +13,12 @@ class ListUnitMeasures extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->modalWidth('lg')
+                ->mutateFormDataUsing(function (array $data): array {
+                    $data['company_id'] = filament()->getTenant()?->id;
+                    return $data;
+                }),
         ];
     }
 }
