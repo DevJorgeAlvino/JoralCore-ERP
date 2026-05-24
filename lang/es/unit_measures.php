@@ -3,15 +3,17 @@
 return [
     'title' => 'Unidades de Medida',
     'single' => 'Unidad de Medida',
+
+    'sections' => [
+        'general' => 'Información General',
+        'general_desc' => 'Datos principales de la unidad de medida.',
+    ],
+
     'fields' => [
-        'name' => 'Nombre',
         'code' => 'Código',
+        'name' => 'Nombre',
         'country' => 'País',
         'created_at' => 'Fecha de Creación',
         'updated_at' => 'Última Actualización',
-    ],
-    'sections' => [
-        'general' => 'Información General',
-        'general_desc' => 'Detalles principales de la unidad de medida.',
     ],
 ];

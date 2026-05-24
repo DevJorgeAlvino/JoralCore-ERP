@@ -3,13 +3,10 @@
 return [
     'title' => 'Users',
     'single' => 'User',
+
     'fields' => [
         'name' => 'Name',
-        'email' => 'Email',
+        'email' => 'Email Address',
         'password' => 'Password',
-        'roles' => 'Roles',
-        'companies' => 'Companies',
-        'email_verified_at' => 'Verified At',
-        'created_at' => 'Created At',
     ],
 ];
