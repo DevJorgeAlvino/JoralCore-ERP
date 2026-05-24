@@ -96,6 +96,9 @@ class CompanyPanelProvider extends PanelProvider
                 
             })
             ->discoverResources(in: app_path('Filament/Company/Resources'), for: 'App\Filament\Company\Resources')
+            ->resources([
+                \App\Filament\Resources\Roles\RoleResource::class,
+            ])
             ->discoverPages(in: app_path('Filament/Company/Pages'), for: 'App\Filament\Company\Pages')
             ->pages([
                 Dashboard::class,

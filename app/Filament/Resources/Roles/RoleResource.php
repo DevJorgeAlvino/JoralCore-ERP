@@ -12,12 +12,9 @@ use App\Filament\Resources\Roles\Pages\ViewRole;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
 use BezhanSalleh\PluginEssentials\Concerns\Resource as Essentials;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -28,11 +25,10 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
-
+use Override;
 
 class RoleResource extends Resource
 {
@@ -45,6 +41,56 @@ class RoleResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getPageOptions(): array
+    {
+        $options = collect(\BezhanSalleh\FilamentShield\Facades\FilamentShield::getPages())
+            ->flatMap(fn ($page) => $page['permissions'])
+            ->toArray();
+
+        // En el panel company, ocultar GlobalSettingsPage
+        if (Filament::getCurrentPanel()?->getId() === 'company') {
+            foreach ($options as $key => $value) {
+                if (\Illuminate\Support\Str::contains($key, 'GlobalSettingsPage')) {
+                    unset($options[$key]);
+                }
+            }
+        }
+
+        return $options;
+    }
+
+    public static function getResourceEntitiesSchema(): ?array
+    {
+        return collect(\BezhanSalleh\FilamentShield\Facades\FilamentShield::getResources())
+            ->filter(function (array $entity) {
+                // En el panel company, ocultar CompanyResource
+                if (Filament::getCurrentPanel()?->getId() === 'company') {
+                    if (\Illuminate\Support\Str::contains($entity['resourceFqcn'], 'CompanyResource')) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            ->map(function (array $entity): \Filament\Schemas\Components\Section {
+                $sectionLabel = strval(
+                    static::shield()->hasLocalizedPermissionLabels()
+                    ? \BezhanSalleh\FilamentShield\Facades\FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
+                    : $entity['model']
+                );
+
+                return \Filament\Schemas\Components\Section::make($sectionLabel)
+                    ->description(fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString('<span style="word-break: break-word;">' . Utils::showModelPath($entity['modelFqcn']) . '</span>'))
+                    ->compact()
+                    ->schema([
+                        static::getCheckBoxListComponentForResource($entity),
+                    ])
+                    ->columnSpan(static::shield()->getSectionColumnSpan())
+                    ->collapsible();
+            })
+            ->toArray();
+    }
+
+    #[Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -90,6 +136,7 @@ class RoleResource extends Resource
             ]);
     }
 
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -103,14 +150,13 @@ class RoleResource extends Resource
                     ->badge()
                     ->color('warning')
                     ->label(__('filament-shield::filament-shield.column.guard_name')),
-                TextColumn::make('company.name')
-                    ->label('Company')
+                TextColumn::make('team.name')
                     ->default('Global')
                     ->badge()
                     ->color(fn (mixed $state): string => str($state)->contains('Global') ? 'gray' : 'primary')
-                    // ->label(__('filament-shield::filament-shield.column.company'))
-                    ->searchable(),
-                    // ->visible(fn (): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()),
+                    ->label(__('filament-shield::filament-shield.column.team'))
+                    ->searchable()
+                    ->visible(fn (): bool => static::shield()->isCentralApp() && Utils::isTenancyEnabled()),
                 TextColumn::make('permissions_count')
                     ->badge()
                     ->label(__('filament-shield::filament-shield.column.permissions'))
@@ -121,21 +167,18 @@ class RoleResource extends Resource
                     ->dateTime(),
             ])
             ->filters([
-                 TrashedFilter::make(),
+                //
             ])
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
+                DeleteBulkAction::make(),
             ]);
     }
 
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -147,12 +190,13 @@ class RoleResource extends Resource
     {
         return [
             'index' => ListRoles::route('/'),
-            // 'create' => CreateRole::route('/create'),
+            'create' => CreateRole::route('/create'),
             'view' => ViewRole::route('/{record}'),
             'edit' => EditRole::route('/{record}/edit'),
         ];
     }
 
+    #[Override]
     public static function getModel(): string
     {
         return Utils::getRoleModel();
