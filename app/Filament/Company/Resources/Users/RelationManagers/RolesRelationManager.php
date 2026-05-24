@@ -21,6 +21,8 @@ class RolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'rolesAll';
 
+    protected static ?string $title = 'Roles Asignados';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public function table(Table $table): Table
