@@ -10,8 +10,6 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\Layout\Split;
-use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\ImageColumn;
 
 class UsersTable
@@ -20,25 +18,19 @@ class UsersTable
     {
         return $table
             ->columns([
-                Split::make([
-                    ImageColumn::make('avatar')
-                        ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=09090b')
-                        ->circular()
-                        ->grow(false),
+                ImageColumn::make('avatar')
+                    ->label('')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=09090b')
+                    ->circular()
+                    ->size(36)
+                    ->grow(false),
 
-                    Stack::make([
-                        TextColumn::make('name')
-                            ->weight('bold')
-                            ->searchable()
-                            ->sortable(),
-                        
-                        TextColumn::make('email')
-                            ->color('gray')
-                            ->searchable()
-                            ->icon('heroicon-m-envelope')
-                            ->size('sm'),
-                    ])->space(1),
-                ]),
+                TextColumn::make('name')
+                    ->label('Usuario')
+                    ->weight('bold')
+                    ->searchable()
+                    ->sortable()
+                    ->description(fn ($record) => $record->email),
 
                 TextColumn::make('company.name')
                     ->label('Empresas Asignadas')

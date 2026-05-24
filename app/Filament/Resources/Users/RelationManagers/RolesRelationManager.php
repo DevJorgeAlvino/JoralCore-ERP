@@ -43,10 +43,19 @@ class RolesRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre'),
+                    ->label('Rol Asignado')
+                    ->badge()
+                    ->color('primary')
+                    ->icon('heroicon-m-identification')
+                    ->searchable()
+                    ->sortable(),
+                
                 TextColumn::make('company.name')
-                    ->label('Empresa')
-                    ->default('Global'),
+                    ->label('Empresa (Contexto)')
+                    ->badge()
+                    ->color('info')
+                    ->icon('heroicon-m-building-office-2')
+                    ->default('Nivel Global'),
             ])
             ->headerActions([
                 CreateAction::make()

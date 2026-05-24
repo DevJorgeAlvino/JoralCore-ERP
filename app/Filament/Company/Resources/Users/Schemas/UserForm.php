@@ -2,7 +2,6 @@
 
 namespace App\Filament\Company\Resources\Users\Schemas;
 
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -15,12 +14,12 @@ class UserForm
     {
         return $schema
             ->components([
-                Group::make()->schema([
-                    Section::make('Información Personal')
-                        ->description('Datos básicos del personal de la empresa.')
-                        ->icon('heroicon-o-user')
-                        ->schema([
-                            Grid::make(2)->schema([
+                Grid::make(2)->schema([
+                    Group::make()->schema([
+                        Section::make('Información Personal')
+                            ->description('Datos básicos del personal de la empresa.')
+                            ->icon('heroicon-o-user')
+                            ->schema([
                                 TextInput::make('name')
                                     ->label(__('users.fields.name'))
                                     ->required()
@@ -35,13 +34,13 @@ class UserForm
                                     ->unique(ignoreRecord: true)
                                     ->prefixIcon('heroicon-m-envelope'),
                             ]),
-                        ]),
+                    ])->columnSpan(1),
 
-                    Section::make('Seguridad')
-                        ->description('Gestión de contraseñas de la cuenta.')
-                        ->icon('heroicon-o-lock-closed')
-                        ->schema([
-                            Grid::make(2)->schema([
+                    Group::make()->schema([
+                        Section::make('Seguridad')
+                            ->description('Gestión de contraseñas de la cuenta.')
+                            ->icon('heroicon-o-lock-closed')
+                            ->schema([
                                 TextInput::make('password')
                                     ->label(__('users.fields.password'))
                                     ->password()
@@ -61,24 +60,9 @@ class UserForm
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->prefixIcon('heroicon-m-key'),
                             ]),
-                        ]),
-                ])->columnSpan(['lg' => 2]),
-
-                Group::make()->schema([
-                    Section::make('Accesos del Tenant')
-                        ->description('Roles específicos dentro de esta empresa.')
-                        ->icon('heroicon-o-shield-check')
-                        ->schema([
-                            Select::make('roles')
-                                ->label('Roles de Usuario')
-                                ->relationship('roles', 'name')
-                                ->multiple()
-                                ->preload()
-                                ->searchable()
-                                ->prefixIcon('heroicon-m-identification'),
-                        ]),
-                ])->columnSpan(['lg' => 1]),
+                    ])->columnSpan(1),
+                ]),
             ])
-            ->columns(['lg' => 3]);
+            ->columns(1);
     }
 }
