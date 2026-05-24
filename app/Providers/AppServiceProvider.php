@@ -62,7 +62,7 @@ class AppServiceProvider extends ServiceProvider
             $companyId = $event->options['company_id'] ?? null;
             
             // Si no viene en options, intentamos sacarlo del Tenant actual (Company Panel)
-            if (!$companyId && \Filament\Facades\Filament::hasTenant()) {
+            if (!$companyId && \Filament\Facades\Filament::hasTenancy()) {
                 $companyId = filament()->getTenant()?->id;
             }
 
@@ -77,7 +77,7 @@ class AppServiceProvider extends ServiceProvider
         // Asignar el company_id al momento de iniciar una exportación
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Exports\Events\ExportStarted::class, function ($event) {
             $companyId = $event->options['company_id'] ?? null;
-            if (!$companyId && \Filament\Facades\Filament::hasTenant()) {
+            if (!$companyId && \Filament\Facades\Filament::hasTenancy()) {
                 $companyId = filament()->getTenant()?->id;
             }
 
