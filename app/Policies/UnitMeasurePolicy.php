@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
+use App\Models\UnitMeasure;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UnitMeasurePolicy
@@ -14,7 +17,7 @@ class UnitMeasurePolicy
         return $authUser->can('ViewAny:UnitMeasure');
     }
 
-    public function view(AuthUser $authUser): bool
+    public function view(AuthUser $authUser, UnitMeasure $unitMeasure): bool
     {
         return $authUser->can('View:UnitMeasure');
     }
@@ -24,22 +27,22 @@ class UnitMeasurePolicy
         return $authUser->can('Create:UnitMeasure');
     }
 
-    public function update(AuthUser $authUser): bool
+    public function update(AuthUser $authUser, UnitMeasure $unitMeasure): bool
     {
         return $authUser->can('Update:UnitMeasure');
     }
 
-    public function delete(AuthUser $authUser): bool
+    public function delete(AuthUser $authUser, UnitMeasure $unitMeasure): bool
     {
         return $authUser->can('Delete:UnitMeasure');
     }
 
-    public function restore(AuthUser $authUser): bool
+    public function restore(AuthUser $authUser, UnitMeasure $unitMeasure): bool
     {
         return $authUser->can('Restore:UnitMeasure');
     }
 
-    public function forceDelete(AuthUser $authUser): bool
+    public function forceDelete(AuthUser $authUser, UnitMeasure $unitMeasure): bool
     {
         return $authUser->can('ForceDelete:UnitMeasure');
     }
@@ -54,7 +57,7 @@ class UnitMeasurePolicy
         return $authUser->can('RestoreAny:UnitMeasure');
     }
 
-    public function replicate(AuthUser $authUser): bool
+    public function replicate(AuthUser $authUser, UnitMeasure $unitMeasure): bool
     {
         return $authUser->can('Replicate:UnitMeasure');
     }

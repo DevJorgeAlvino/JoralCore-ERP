@@ -121,9 +121,9 @@ class CompanyPanelProvider extends PanelProvider
                 \App\Http\Middleware\CheckCompanyAccess::class,
             ])
             // Shield se gestiona solo desde el panel Admin (centralizado)
-            // ->plugins([
-            //     FilamentShieldPlugin::make(),
-            // ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+            ])
             ->tenant(Company::class)
             ->tenantRegistration(\App\Filament\Pages\Tenancy\RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)

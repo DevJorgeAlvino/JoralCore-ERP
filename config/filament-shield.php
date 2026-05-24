@@ -175,7 +175,6 @@ return [
             ],
         ],
         'exclude' => [
-            \App\Filament\Resources\Companies\CompanyResource::class,
         ],
     ],
 
@@ -195,7 +194,6 @@ return [
         'prefix' => 'view',
         'exclude' => [
             \Filament\Pages\Dashboard::class,
-            \App\Filament\Pages\GlobalSettingsPage::class,
         ],
     ],
 
@@ -244,9 +242,9 @@ return [
     */
 
     'discovery' => [
-        'discover_all_resources' => false,
-        'discover_all_widgets' => false,
-        'discover_all_pages' => false,
+        'discover_all_resources' => true,
+        'discover_all_widgets' => true,
+        'discover_all_pages' => true,
     ],
 
     /*

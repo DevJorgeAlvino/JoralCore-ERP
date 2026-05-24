@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use Illuminate\Foundation\Auth\User as AuthUser;
+use App\Models\Item;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class ItemPolicy
@@ -14,7 +17,7 @@ class ItemPolicy
         return $authUser->can('ViewAny:Item');
     }
 
-    public function view(AuthUser $authUser): bool
+    public function view(AuthUser $authUser, Item $item): bool
     {
         return $authUser->can('View:Item');
     }
@@ -24,22 +27,22 @@ class ItemPolicy
         return $authUser->can('Create:Item');
     }
 
-    public function update(AuthUser $authUser): bool
+    public function update(AuthUser $authUser, Item $item): bool
     {
         return $authUser->can('Update:Item');
     }
 
-    public function delete(AuthUser $authUser): bool
+    public function delete(AuthUser $authUser, Item $item): bool
     {
         return $authUser->can('Delete:Item');
     }
 
-    public function restore(AuthUser $authUser): bool
+    public function restore(AuthUser $authUser, Item $item): bool
     {
         return $authUser->can('Restore:Item');
     }
 
-    public function forceDelete(AuthUser $authUser): bool
+    public function forceDelete(AuthUser $authUser, Item $item): bool
     {
         return $authUser->can('ForceDelete:Item');
     }
@@ -54,7 +57,7 @@ class ItemPolicy
         return $authUser->can('RestoreAny:Item');
     }
 
-    public function replicate(AuthUser $authUser): bool
+    public function replicate(AuthUser $authUser, Item $item): bool
     {
         return $authUser->can('Replicate:Item');
     }
