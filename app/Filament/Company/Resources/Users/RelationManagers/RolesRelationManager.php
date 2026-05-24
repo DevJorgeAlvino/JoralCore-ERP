@@ -17,13 +17,18 @@ use Filament\Schemas\Components\Utilities\Set as UtilitiesSet;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+use Illuminate\Database\Eloquent\Model;
+
 class RolesRelationManager extends RelationManager
 {
     protected static string $relationship = 'rolesAll';
 
-    protected static ?string $title = 'Roles Asignados';
-
     protected static ?string $recordTitleAttribute = 'name';
+
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('roles.assigned');
+    }
 
     public function table(Table $table): Table
     {
