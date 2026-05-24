@@ -253,6 +253,8 @@ class CompanySettingsPage extends Page
             ->body(__('settings.messages.saved_company'))
             ->success()
             ->send();
+
+        $this->redirect(request()->header('Referer'));
     }
 
     /**

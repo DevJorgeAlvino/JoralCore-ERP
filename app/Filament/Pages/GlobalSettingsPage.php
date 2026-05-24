@@ -162,5 +162,7 @@ class GlobalSettingsPage extends Page
             ->body(__('settings.messages.saved_global'))
             ->success()
             ->send();
+
+        $this->redirect(request()->header('Referer'));
     }
 }
