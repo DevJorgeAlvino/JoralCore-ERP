@@ -11,16 +11,24 @@ class RegisterCompany extends RegisterTenant
 {
     public static function getLabel(): string
     {
-        return 'Register company';
+        return 'Registrar nueva compañía';
     }
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('name'),
-                TextInput::make('slug'),
+                TextInput::make('name')
+                    ->label('Nombre')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('slug')
+                    ->label('Slug / Identificador')
+                    ->required()
+                    ->maxLength(255),
                 TextInput::make('description')
+                    ->label('Descripción')
+                    ->maxLength(255)
             ]);
     }
 

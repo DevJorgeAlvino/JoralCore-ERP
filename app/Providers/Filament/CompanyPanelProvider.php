@@ -125,6 +125,7 @@ class CompanyPanelProvider extends PanelProvider
             //     FilamentShieldPlugin::make(),
             // ])
             ->tenant(Company::class)
+            ->tenantRegistration(\App\Filament\Pages\Tenancy\RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->tenantMiddleware([
                 SetUserCompanyTenant::class,
