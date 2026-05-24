@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'tenant_model' => null,
+    'tenant_model' => \App\Models\Company::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ return [
     'super_admin' => [
         'enabled' => true,
         'name' => 'super_admin',
-        'define_via_gate' => false,
+        'define_via_gate' => true,
         'intercept_gate' => 'before',
     ],
 
@@ -175,7 +175,7 @@ return [
             ],
         ],
         'exclude' => [
-            //
+            \App\Filament\Resources\Companies\CompanyResource::class,
         ],
     ],
 
@@ -195,6 +195,7 @@ return [
         'prefix' => 'view',
         'exclude' => [
             \Filament\Pages\Dashboard::class,
+            \App\Filament\Pages\GlobalSettingsPage::class,
         ],
     ],
 

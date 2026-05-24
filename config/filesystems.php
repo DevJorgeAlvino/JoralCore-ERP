@@ -60,6 +60,19 @@ return [
             'report' => false,
         ],
 
+        // REVISA QUE ESTA LLAVE ESTÉ ESCRITA IGUAL
+        'r2_public' => [
+            'driver' => 's3', // <-- ASEGÚRATE DE QUE DIGA 's3' (en minúsculas)
+            'key' => env('CLOUDFLARE_R2_ACCESS_KEY_ID'),
+            'secret' => env('CLOUDFLARE_R2_SECRET_ACCESS_KEY'),
+            'region' => 'auto',
+            'bucket' => env('CLOUDFLARE_R2_BUCKET'),
+            'endpoint' => env('CLOUDFLARE_R2_ENDPOINT'),
+            'visibility' => 'public',
+            'url' => env('CLOUDFLARE_R2_URL'),
+            'throw' => false,
+        ],
+
     ],
 
     /*
