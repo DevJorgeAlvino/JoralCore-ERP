@@ -163,4 +163,44 @@ class ItemImporter extends Importer
 
         return $body;
     }
-}
+
+    /**
+     * Inyecta el company_id en la notificación de completado para que el filtro
+     * por empresa funcione incluso cuando el job corre en background (sin contexto HTTP).
+     */
+    public static function modifyCompletedNotification(\Filament\Notifications\Notification $notification, Import $import): \Filament\Notifications\Notification
+    {
+        // La notificación de Filament almacena su data internamente.
+        // Usamos el observer en AppServiceProvider que intercepta DatabaseNotification::creating.
+        // Para el caso del background job, necesitamos forzar el company_id directamente
+        // en la bd despues de que se guarde. Usamos el evento NotificationSent de Laravel.
+
+        // Registramos un listener one-time para capturar la notificación que está a punto de guardarse
+        $companyId = $import->company_id;
+
+        if ($companyId) {
+            \Illuminate\Support\Facades\Event::listen(
+                \Illuminate\Notifications\Events\NotificationSent::class,
+                function ($event) use ($companyId) {
+                    try {
+                        // Buscamos la última notificación del usuario y le aplicamos company_id
+                        $dbNotification = \Illuminate\Notifications\DatabaseNotification::where('notifiable_id', $event->notifiable->getKey())
+                            ->latest()
+                            ->first();
+
+                        if ($dbNotification) {
+                            $data = json_decode($dbNotification->data, true) ?? [];
+                            if (($data['format'] ?? '') === 'filament' && !isset($data['company_id'])) {
+                                $data['company_id'] = $companyId;
+                                $dbNotification->update(['data' => json_encode($data)]);
+                            }
+                        }
+                    } catch (\Throwable) {
+                        // Silencioso
+                    }
+                }
+            );
+        }
+
+        return $notification;
+    }

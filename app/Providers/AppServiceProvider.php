@@ -149,7 +149,43 @@ class AppServiceProvider extends ServiceProvider
                 \Illuminate\Support\Facades\File::delete($filePath);
             }
         });
-        
+        // ─── Inyectar company_id en notificaciones según el panel activo ──────────
+        // Cuando Filament guarda una notificación en la BD, interceptamos el modelo
+        // y le agregamos el company_id del Tenant activo directamente en el JSON `data`.
+        // NULL = notificación del panel Admin (global).
+        // UUID = notificación del panel Company (filtrada por empresa).
+        \Illuminate\Notifications\DatabaseNotification::creating(function ($notification) {
+            try {
+                $data = json_decode($notification->data, true) ?? [];
+
+                // Solo procesamos notificaciones de Filament
+                if (($data['format'] ?? '') !== 'filament') {
+                    return;
+                }
+
+                // Intentamos obtener el Tenant activo (contexto HTTP)
+                $companyId = null;
+
+                if (app()->bound('filament')) {
+                    try {
+                        $panel = \Filament\Facades\Filament::getCurrentPanel();
+                        if ($panel && $panel->getId() === 'company') {
+                            $companyId = \Filament\Facades\Filament::getTenant()?->id;
+                        }
+                    } catch (\Throwable) {
+                        // No hay contexto HTTP (background job) - dejamos null
+                    }
+                }
+
+                // Inyectamos en el JSON del data
+                $data['company_id'] = $companyId;
+                $notification->data = json_encode($data);
+
+            } catch (\Throwable) {
+                // Si algo falla, no bloqueamos la notificación
+            }
+        });
+
     }
 
     protected function configureDefaults(): void
