@@ -56,6 +56,39 @@ class AppServiceProvider extends ServiceProvider
                     'en' => 'https://flagcdn.com/w40/us.png',
                 ]); 
         });
+
+        // Subir archivo a Cloudflare R2 solo cuando la importación de ítems finalice correctamente
+        \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportCompleted::class, function ($event) {
+            $import = $event->import;
+            $options = $event->options;
+
+            if ($import->importer !== \App\Filament\Imports\ItemImporter::class) {
+                return;
+            }
+
+            $companyId = $options['company_id'] ?? null;
+            if (!$companyId) {
+                return;
+            }
+
+            $filePath = $import->file_path;
+            
+            if (file_exists($filePath)) {
+                $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
+                $storage = \Illuminate\Support\Facades\Storage::disk($disk);
+                
+                $fileName = basename($filePath);
+                if (!\Illuminate\Support\Str::endsWith($fileName, '.csv')) {
+                    $fileName .= '.csv';
+                }
+                
+                $r2Path = "companies/company_{$companyId}/items/imports/{$fileName}";
+                
+                $storage->put($r2Path, file_get_contents($filePath));
+                
+                @unlink($filePath);
+            }
+        });
         
     }
 
