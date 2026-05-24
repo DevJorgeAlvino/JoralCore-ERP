@@ -45,6 +45,7 @@ class AdminPanelProvider extends PanelProvider
             ->favicon($this->getFavicon())
             ->colors([
                 'primary' => $this->getPrimaryColor(),
+                'secondary' => $this->getSecondaryColor(),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
@@ -138,6 +139,15 @@ class AdminPanelProvider extends PanelProvider
             return SystemSettingService::get('color_primary', Color::Amber);
         } catch (\Throwable) {
             return Color::Amber;
+        }
+    }
+
+    private function getSecondaryColor(): string|array
+    {
+        try {
+            return SystemSettingService::get('color_secondary', Color::Gray);
+        } catch (\Throwable) {
+            return Color::Gray;
         }
     }
 }

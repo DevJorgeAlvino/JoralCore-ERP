@@ -18,10 +18,11 @@ class ListItems extends ListRecords
             \Filament\Actions\ImportAction::make()
                 ->importer(\App\Filament\Imports\ItemImporter::class)
                 ->label('Importar Ítems')
-                ->modalDescription('El sistema procesa y mapea nativamente archivos CSV para asegurar un rendimiento óptimo. Si usas Excel, guarda tu archivo como .csv antes de subirlo.')
+                ->modalDescription(new \Illuminate\Support\HtmlString('El sistema procesa y mapea nativamente archivos CSV para asegurar un rendimiento óptimo. Si usas Excel, guarda tu archivo como .csv antes de subirlo.<br><br><strong><span style="color: #eab308;">⚠️ Límite máximo: 10,000 registros por archivo.</span></strong>'))
                 ->icon('heroicon-o-arrow-up-tray')
                 ->maxRows(10000)
-                ->color('info')
+                ->color('secondary')
+                ->modalWidth('3xl')
                 // Inyectamos el company_id en las opciones AHORA (contexto HTTP con Tenant activo)
                 // Para que el job en background pueda leerlo desde $this->options['company_id']
                 ->options(['company_id' => filament()->getTenant()?->id]),

@@ -25,10 +25,12 @@ class ApplyTenantBranding
 
         if ($tenant) {
 
-            $primaryHex = $tenant->settings()->where('key', 'primary_color')->value('value');
+            $primaryHex = CompanySettingService::get($tenant->id, 'primary_color', Color::Amber);
+            $secondaryHex = CompanySettingService::get($tenant->id, 'secondary_color', Color::Gray);
 
             FilamentColor::register([
-                'primary' => $primaryHex
+                'primary' => $primaryHex,
+                'secondary' => $secondaryHex,
             ]);
 
         }
