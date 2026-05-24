@@ -26,6 +26,11 @@ class UnitMeasureResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'code', 'country'];
+    }
+
     public static function getModelLabel(): string
     {
         return __('unit_measures.single');
