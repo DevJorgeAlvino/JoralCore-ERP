@@ -118,6 +118,7 @@ class CompanyPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\CheckCompanyAccess::class,
             ])
             // Shield se gestiona solo desde el panel Admin (centralizado)
             // ->plugins([
