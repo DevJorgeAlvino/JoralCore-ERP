@@ -17,54 +17,65 @@ class ItemImporter extends Importer
         return [
             ImportColumn::make('name')
                 ->label('Nombre del Ítem')
+                ->guess(['nombre', 'producto', 'articulo', 'name'])
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
             
             ImportColumn::make('sku')
                 ->label('SKU')
+                ->guess(['sku', 'codigo', 'codigo sku'])
                 ->rules(['nullable', 'max:255']),
 
             ImportColumn::make('barcode')
                 ->label('Código de Barras')
+                ->guess(['barcode', 'codigo de barras', 'ean', 'upc'])
                 ->rules(['nullable', 'max:255']),
 
             ImportColumn::make('type')
                 ->label('Tipo (product/service)')
+                ->guess(['tipo', 'type', 'clase'])
                 ->requiredMapping()
                 ->rules(['required', 'in:product,service']),
 
             ImportColumn::make('unit_code')
                 ->label('Cód. Unidad Medida')
+                ->guess(['unidad', 'unidad medida', 'unit', 'unit_code', 'medida'])
                 ->rules(['nullable', 'max:5']),
 
             ImportColumn::make('purchase_cost')
                 ->label('Costo de Compra')
+                ->guess(['costo', 'costo de compra', 'purchase_cost', 'precio compra'])
                 ->numeric()
                 ->rules(['nullable', 'numeric']),
 
             ImportColumn::make('sale_price')
                 ->label('Precio de Venta')
+                ->guess(['precio', 'precio de venta', 'sale_price', 'precio venta'])
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'numeric']),
 
             ImportColumn::make('manage_stock')
                 ->label('Gestiona Stock? (1 o 0)')
+                ->guess(['gestiona stock', 'controla stock', 'manage_stock', 'stock_control'])
                 ->boolean()
                 ->rules(['nullable', 'boolean']),
 
             ImportColumn::make('current_stock')
                 ->label('Stock Actual')
+                ->guess(['stock', 'stock actual', 'current_stock', 'cantidad', 'inventario'])
                 ->numeric()
                 ->rules(['nullable', 'numeric']),
 
             ImportColumn::make('minimum_stock')
                 ->label('Stock Mínimo')
+                ->guess(['stock minimo', 'minimum_stock', 'minimo'])
                 ->numeric()
                 ->rules(['nullable', 'numeric']),
 
             ImportColumn::make('is_active')
                 ->label('Es Activo? (1 o 0)')
+                ->guess(['activo', 'is_active', 'estado'])
                 ->boolean()
                 ->rules(['nullable', 'boolean']),
         ];
