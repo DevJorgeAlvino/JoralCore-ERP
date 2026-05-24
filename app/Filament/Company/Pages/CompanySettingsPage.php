@@ -59,7 +59,6 @@ class CompanySettingsPage extends Page
             'company_icon'       => $settings['company_icon'] ?? null,
             'primary_color'      => $settings['primary_color'] ?? '#f59e0b',
             'secondary_color'    => $settings['secondary_color'] ?? '#6366f1',
-            'locale'             => $settings['locale'] ?? 'es',
             // Operaciones
             'business_hours'     => $settings['business_hours'] ?? $this->defaultBusinessHours(),
             'secondary_currency' => $settings['secondary_currency'] ?? null,
@@ -121,21 +120,6 @@ class CompanySettingsPage extends Page
 
                     // ─── Columna Derecha ───
                     Group::make()->schema([
-                        Section::make(__('settings.sections.language'))
-                            ->description(__('settings.sections.language_desc'))
-                            ->icon('heroicon-o-language')
-                            ->schema([
-                                ToggleButtons::make('locale')
-                                    ->label(__('settings.fields.locale'))
-                                    ->options([
-                                        'es' => '🇪🇸 ES',
-                                        'en' => '🇺🇸 EN',
-                                        'pt' => '🇧🇷 PT',
-                                    ])
-                                    ->inline()
-                                    ->required()
-                            ]),
-
                         Section::make(__('settings.sections.currency'))
                             ->description(__('settings.sections.currency_desc'))
                             ->icon('heroicon-o-currency-dollar')

@@ -56,7 +56,6 @@ class GlobalSettingsPage extends Page
             'app_favicon'     => $settings['app_favicon'] ?? null,
             'color_primary'   => $settings['color_primary'] ?? '#f59e0b',
             'color_secondary' => $settings['color_secondary'] ?? '#6366f1',
-            'default_locale'  => $settings['default_locale'] ?? 'es',
         ]);
     }
 
@@ -115,21 +114,6 @@ class GlobalSettingsPage extends Page
                                     ->required()
                                     ->helperText(__('settings.helpers.color_secondary')),
                             ])->columns(2),
-
-                        Section::make(__('settings.sections.language'))
-                            ->description(__('settings.sections.language_desc'))
-                            ->icon('heroicon-o-language')
-                            ->schema([
-                                ToggleButtons::make('default_locale')
-                                    ->label(__('settings.fields.default_locale'))
-                                    ->options([
-                                        'es' => '🇪🇸 ES',
-                                        'en' => '🇺🇸 EN',
-                                        'pt' => '🇧🇷 PT',
-                                    ])
-                                    ->inline()
-                                    ->required()
-                            ]),
                     ])->columnSpan(1),
 
                 ]),
