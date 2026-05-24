@@ -106,6 +106,14 @@ class ItemImporter extends Importer
             throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('No se ha podido asignar una Empresa (Tenant) a este ítem.');
         }
 
+        // Forzar la actualización del company_id en la tabla imports si aún no lo tiene
+        if (!$this->import->company_id) {
+            \Illuminate\Support\Facades\DB::table('imports')
+                ->where('id', $this->import->id)
+                ->update(['company_id' => $companyId]);
+            $this->import->company_id = $companyId;
+        }
+
         $item->company_id = $companyId;
 
         // Configuración por defecto si no vienen en el archivo
@@ -121,6 +129,7 @@ class ItemImporter extends Importer
 
     public function saveRecord(): void
     {
+        
         try {
             parent::saveRecord();
         } catch (\Illuminate\Database\QueryException $e) {

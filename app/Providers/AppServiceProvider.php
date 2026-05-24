@@ -61,9 +61,20 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Event::listen(\Filament\Actions\Imports\Events\ImportStarted::class, function ($event) {
             $companyId = $event->options['company_id'] ?? null;
             
+            $hasTenancy = \Filament\Facades\Filament::hasTenancy();
+            $tenantId = $hasTenancy ? filament()->getTenant()?->id : null;
+
+            // Log de depuración
+            \Illuminate\Support\Facades\Log::info('ImportStarted Triggered', [
+                'options' => $event->options,
+                'hasTenancy' => $hasTenancy,
+                'tenantId' => $tenantId,
+                'currentPanel' => \Filament\Facades\Filament::getCurrentPanel()->getId(),
+            ]);
+
             // Si no viene en options, intentamos sacarlo del Tenant actual (Company Panel)
-            if (!$companyId && \Filament\Facades\Filament::hasTenancy()) {
-                $companyId = filament()->getTenant()?->id;
+            if (!$companyId && $hasTenancy) {
+                $companyId = $tenantId;
             }
 
             if ($companyId) {
