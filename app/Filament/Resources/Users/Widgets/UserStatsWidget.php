@@ -15,16 +15,16 @@ class UserStatsWidget extends BaseWidget
         $unverifiedUsers = $totalUsers - $verifiedUsers;
 
         return [
-            Stat::make('Total Usuarios', $totalUsers)
-                ->description('Usuarios registrados en el sistema')
+            Stat::make(__('users.widgets.stats.admin_total'), $totalUsers)
+                ->description(__('users.widgets.stats.admin_total_desc'))
                 ->descriptionIcon('heroicon-m-users')
                 ->color('primary'),
-            Stat::make('Cuentas Verificadas', $verifiedUsers)
-                ->description('Correos confirmados')
+            Stat::make(__('users.widgets.stats.verified'), $verifiedUsers)
+                ->description(__('users.widgets.stats.verified_desc'))
                 ->descriptionIcon('heroicon-m-check-badge')
                 ->color('success'),
-            Stat::make('Pendientes', $unverifiedUsers)
-                ->description('Correos sin confirmar')
+            Stat::make(__('users.widgets.stats.pending'), $unverifiedUsers)
+                ->description(__('users.widgets.stats.pending_desc'))
                 ->descriptionIcon('heroicon-m-exclamation-circle')
                 ->color('warning'),
         ];

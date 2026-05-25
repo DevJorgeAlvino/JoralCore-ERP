@@ -26,14 +26,14 @@ class UsersTable
                     ->grow(false),
 
                 TextColumn::make('name')
-                    ->label('Usuario')
+                    ->label(__('users.table.user'))
                     ->weight('bold')
                     ->searchable()
                     ->sortable()
                     ->description(fn ($record) => $record->email),
 
                 TextColumn::make('company.name')
-                    ->label('Empresas Asignadas')
+                    ->label(__('users.table.assigned_companies'))
                     ->badge()
                     ->color('info')
                     ->icon('heroicon-m-building-office-2')
@@ -43,7 +43,7 @@ class UsersTable
                     ->toggleable(),
 
                 TextColumn::make('roles.name')
-                    ->label('Roles Globales')
+                    ->label(__('users.table.global_roles'))
                     ->badge()
                     ->color('primary')
                     ->separator(',')
@@ -51,15 +51,15 @@ class UsersTable
                     ->toggleable(),
 
                 TextColumn::make('email_verified_at')
-                    ->label('Verificado')
+                    ->label(__('users.table.verified'))
                     ->badge()
                     ->color(fn ($state) => $state ? 'success' : 'warning')
                     ->icon(fn ($state) => $state ? 'heroicon-m-check-badge' : 'heroicon-m-exclamation-circle')
-                    ->formatStateUsing(fn ($state) => $state ? 'Sí' : 'No')
+                    ->formatStateUsing(fn ($state) => $state ? __('users.table.yes') : __('users.table.no'))
                     ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label('Registro')
+                    ->label(__('users.table.registered'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

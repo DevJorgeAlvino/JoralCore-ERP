@@ -38,7 +38,7 @@ class RolesRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Rol Asignado')
+                    ->label(__('roles.table.role'))
                     ->badge()
                     ->color('primary')
                     ->icon('heroicon-m-identification')
@@ -46,22 +46,22 @@ class RolesRelationManager extends RelationManager
                     ->sortable(),
 
                 TextColumn::make('company.name')
-                    ->label('Empresa (Contexto)')
+                    ->label(__('roles.table.company'))
                     ->badge()
                     ->color('info')
                     ->icon('heroicon-m-building-office-2')
-                    ->default('Nivel Global'),
+                    ->default(__('roles.table.global_level')),
             ])
             ->headerActions([
                 Action::make('asignar_rol')
-                    ->label('Asignar Rol')
+                    ->label(__('roles.actions.assign_role'))
                     ->icon('heroicon-m-link')
                     ->color('primary')
                     ->modalWidth('md')
                     ->form([
                         Select::make('role_id')
-                            ->label('Rol Disponible')
-                            ->placeholder('Selecciona un rol')
+                            ->label(__('roles.actions.available_role'))
+                            ->placeholder(__('roles.actions.select_role'))
                             ->searchable()
                             ->preload()
                             ->options(function ($livewire) use ($tenant) {
@@ -88,7 +88,7 @@ class RolesRelationManager extends RelationManager
                             $user->assignRole($role);
 
                             \Filament\Notifications\Notification::make()
-                                ->title('Rol asignado correctamente')
+                                ->title(__('roles.actions.assigned_success'))
                                 ->success()
                                 ->send();
                         }

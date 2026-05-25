@@ -16,8 +16,8 @@ class UserForm
             ->components([
                 Grid::make(2)->schema([
                     Group::make()->schema([
-                        Section::make('Información Personal')
-                            ->description('Datos básicos del usuario.')
+                        Section::make(__('users.form.personal_info'))
+                            ->description(__('users.form.personal_info_desc'))
                             ->icon('heroicon-o-user')
                             ->schema([
                                 TextInput::make('name')
@@ -37,8 +37,8 @@ class UserForm
                     ])->columnSpan(1),
 
                     Group::make()->schema([
-                        Section::make('Seguridad')
-                            ->description('Contraseña y credenciales de acceso.')
+                        Section::make(__('users.form.security'))
+                            ->description(__('users.form.security_desc'))
                             ->icon('heroicon-o-lock-closed')
                             ->schema([
                                 TextInput::make('password')
@@ -52,7 +52,7 @@ class UserForm
                                     ->prefixIcon('heroicon-m-key'),
                                 
                                 TextInput::make('password_confirmation')
-                                    ->label('Confirmar Contraseña')
+                                    ->label(__('users.fields.password_confirmation'))
                                     ->password()
                                     ->maxLength(255)
                                     ->minLength(8)
