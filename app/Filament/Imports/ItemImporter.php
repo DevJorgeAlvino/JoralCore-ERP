@@ -16,65 +16,65 @@ class ItemImporter extends Importer
     {
         return [
             ImportColumn::make('name')
-                ->label('Nombre del Ítem')
+                ->label(__('items.infolist.fields.name'))
                 ->guess(['nombre', 'producto', 'articulo', 'name'])
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
             
             ImportColumn::make('sku')
-                ->label('SKU')
+                ->label(__('items.infolist.fields.sku'))
                 ->guess(['sku', 'codigo', 'codigo sku'])
                 ->rules(['nullable', 'max:255']),
 
             ImportColumn::make('barcode')
-                ->label('Código de Barras')
+                ->label(__('items.infolist.fields.barcode'))
                 ->guess(['barcode', 'codigo de barras', 'ean', 'upc'])
                 ->rules(['nullable', 'max:255']),
 
             ImportColumn::make('type')
-                ->label('Tipo (product/service)')
+                ->label(__('items.infolist.fields.item_type'))
                 ->guess(['tipo', 'type', 'clase'])
                 ->requiredMapping()
                 ->rules(['required', 'in:product,service']),
 
             ImportColumn::make('unit_measure_code')
-                ->label('Cód. Unidad Medida')
+                ->label(__('items.infolist.fields.unit_measure'))
                 ->guess(['unidad', 'unidad medida', 'unit', 'unit_code', 'medida'])
                 ->rules(['nullable', 'max:10']),
 
             ImportColumn::make('purchase_cost')
-                ->label('Costo de Compra')
+                ->label(__('items.infolist.fields.purchase_cost'))
                 ->guess(['costo', 'costo de compra', 'purchase_cost', 'precio compra'])
                 ->numeric()
                 ->rules(['nullable', 'numeric']),
 
             ImportColumn::make('sale_price')
-                ->label('Precio de Venta')
+                ->label(__('items.infolist.fields.sale_price'))
                 ->guess(['precio', 'precio de venta', 'sale_price', 'precio venta'])
                 ->requiredMapping()
                 ->numeric()
                 ->rules(['required', 'numeric']),
 
             ImportColumn::make('manage_stock')
-                ->label('Gestiona Stock? (1 o 0)')
+                ->label(__('items.infolist.fields.manage_stock'))
                 ->guess(['gestiona stock', 'controla stock', 'manage_stock', 'stock_control'])
                 ->boolean()
                 ->rules(['nullable', 'boolean']),
 
             ImportColumn::make('current_stock')
-                ->label('Stock Actual')
+                ->label(__('items.infolist.fields.current_stock'))
                 ->guess(['stock', 'stock actual', 'current_stock', 'cantidad', 'inventario'])
                 ->numeric()
                 ->rules(['nullable', 'numeric']),
 
             ImportColumn::make('minimum_stock')
-                ->label('Stock Mínimo')
+                ->label(__('items.infolist.fields.minimum_stock'))
                 ->guess(['stock minimo', 'minimum_stock', 'minimo'])
                 ->numeric()
                 ->rules(['nullable', 'numeric']),
 
             ImportColumn::make('is_active')
-                ->label('Es Activo? (1 o 0)')
+                ->label(__('items.infolist.fields.is_active'))
                 ->guess(['activo', 'is_active', 'estado'])
                 ->boolean()
                 ->rules(['nullable', 'boolean']),
@@ -85,7 +85,7 @@ class ItemImporter extends Importer
     {
         return [
             \Filament\Forms\Components\Select::make('company_id')
-                ->label('Empresa Destino')
+                ->label(__('items.infolist.fields.company'))
                 ->options(\App\Models\Company::pluck('name', 'id'))
                 ->required()
                 ->searchable()

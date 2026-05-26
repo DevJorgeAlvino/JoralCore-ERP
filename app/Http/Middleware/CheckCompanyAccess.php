@@ -18,7 +18,7 @@ class CheckCompanyAccess
         $user = $request->user();
 
         // Si el usuario no tiene ninguna empresa asignada...
-        if ($user && $user->company()->count() === 0) {
+        if ($user && $user->companies()->count() === 0) {
             
             // Verificamos si es super admin
             $isSuperAdmin = $user->roles()

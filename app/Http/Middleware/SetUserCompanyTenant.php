@@ -32,7 +32,7 @@ class SetUserCompanyTenant
             return $next($request);
         }
 
-        $company = $user->company()->first();
+        $company = $user->companies()->first();
 
         if(!$company){
 

@@ -28,7 +28,23 @@ return [
         'phone' => 'Phone',
         'email' => 'Email',
         'created_at' => 'Created At',
-        'updated_at' => 'Updated At',
+        'updated_at' => 'Last Updated',
         'deleted_at' => 'Deleted At',
+    ],
+
+    'table' => [
+        'status' => 'Status',
+        'active' => 'Active',
+        'inactive' => 'Inactive',
+    ],
+    
+    'relations' => [
+        'assigned' => 'Assigned Companies',
+        'assign_company' => 'Assign Company',
+        'assigned_users' => 'Assigned Users',
+        'attach_user' => 'Attach User',
+        'create_user' => 'Create User',
+        'roles' => 'Company Roles',
+        'create_role' => 'Create Role',
     ],
 ];

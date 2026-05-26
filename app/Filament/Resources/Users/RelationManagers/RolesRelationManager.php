@@ -28,6 +28,7 @@ use Filament\Forms\Set;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get as UtilitiesGet;
 use Filament\Schemas\Components\Utilities\Set as UtilitiesSet;
+use Illuminate\Database\Eloquent\Model;
 
 class RolesRelationManager extends RelationManager
 {
@@ -37,13 +38,18 @@ class RolesRelationManager extends RelationManager
 
     protected static ?string $relatedResource = RoleResource::class;
 
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('roles.assigned');
+    }
+
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->label('Rol Asignado')
+                    ->label(__('roles.table.role'))
                     ->badge()
                     ->color('primary')
                     ->icon('heroicon-m-identification')
@@ -51,11 +57,11 @@ class RolesRelationManager extends RelationManager
                     ->sortable(),
                 
                 TextColumn::make('company.name')
-                    ->label('Empresa (Contexto)')
+                    ->label(__('roles.table.company'))
                     ->badge()
                     ->color('info')
                     ->icon('heroicon-m-building-office-2')
-                    ->default('Nivel Global'),
+                    ->default(__('roles.table.global_level')),
             ])
             ->headerActions([
                 CreateAction::make()
@@ -65,7 +71,7 @@ class RolesRelationManager extends RelationManager
                             name: 'company', 
                             titleAttribute: 'name',
                             modifyQueryUsing: function (Builder $query, $livewire) {
-                                $companyIds = $livewire->getOwnerRecord()->company()->pluck('companies.id')->toArray();
+                                $companyIds = $livewire->getOwnerRecord()->companies()->pluck('companies.id')->toArray();
                                 return $query->whereIn('id', $companyIds);
                             }
                         )
@@ -73,7 +79,7 @@ class RolesRelationManager extends RelationManager
                         ->preload()
                         ->required(),
                         TextInput::make('name')
-                            ->label('Nombre')
+                            ->label(__('users.fields.name'))
                             ->required(),
                         TextInput::make('guard_name')
                             ->label('Guard')
@@ -81,7 +87,7 @@ class RolesRelationManager extends RelationManager
                             ->required(),
                     ]),
                Action::make('asignar_rol_contextual')
-                    ->label('Asignar Rol')
+                    ->label(__('roles.actions.assign_role'))
                     ->icon('heroicon-m-link')
                     ->color('primary')
                     ->modalWidth('md')
@@ -89,14 +95,14 @@ class RolesRelationManager extends RelationManager
                         
                         // 1. PRIMER SELECT: La Empresa
                         Select::make('company_id')
-                            ->label('Empresa')
-                            ->placeholder('Selecciona la empresa primero')
+                            ->label(__('companies.single'))
+                            ->placeholder(__('roles.actions.select_company_first'))
                             ->searchable()
                             ->preload() // Seguro porque un usuario raramente tiene miles de empresas asignadas
                             ->options(function ($livewire) {
                                 // Traemos solo las empresas asignadas al usuario que editamos
                                 return $livewire->getOwnerRecord()
-                                    ->company() // O ->companies() según tu modelo
+                                    ->companies() // O ->companies() según tu modelo
                                     ->pluck('companies.name', 'companies.id');
                             })
                             ->required()
@@ -105,8 +111,8 @@ class RolesRelationManager extends RelationManager
 
                         // 2. SEGUNDO SELECT: El Rol (Dependiente)
                         Select::make('role_id')
-                            ->label('Rol Disponibles')
-                            ->placeholder('Selecciona un rol')
+                            ->label(__('roles.actions.available_role'))
+                            ->placeholder(__('roles.actions.select_role'))
                             ->searchable()
                             ->preload() // Aquí sí es seguro usar preload porque serán pocos roles (ej. 10 o 20)
                             
@@ -143,7 +149,7 @@ class RolesRelationManager extends RelationManager
                             $user->assignRole($role);
                             
                             \Filament\Notifications\Notification::make()
-                                ->title('Rol asignado correctamente')
+                                ->title(__('roles.actions.assigned_success'))
                                 ->success()
                                 ->send();
                         }

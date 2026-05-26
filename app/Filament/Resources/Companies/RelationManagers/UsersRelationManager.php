@@ -26,7 +26,10 @@ class UsersRelationManager extends RelationManager
 
     protected static ?string $relatedResource = UserResource::class;
     
-    protected static ?string $title = 'Usuarios Asignados';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('companies.relations.assigned_users');
+    }
 
     public function table(Table $table): Table
     {
@@ -40,14 +43,14 @@ class UsersRelationManager extends RelationManager
                     ->grow(false),
 
                 TextColumn::make('name')
-                    ->label('Usuario')
+                    ->label(__('users.table.user'))
                     ->weight('bold')
                     ->searchable()
                     ->sortable()
                     ->description(fn ($record) => $record->email),
 
                 TextColumn::make('rolesAll.name')
-                    ->label('Roles')
+                    ->label(__('users.table.roles'))
                     ->badge()
                     ->color('primary')
                     ->separator(',')
@@ -55,36 +58,76 @@ class UsersRelationManager extends RelationManager
                     ->toggleable(),
 
                 TextColumn::make('email_verified_at')
-                    ->label('Verificado')
+                    ->label(__('users.table.verified'))
                     ->badge()
                     ->color(fn ($state) => $state ? 'success' : 'warning')
                     ->icon(fn ($state) => $state ? 'heroicon-m-check-badge' : 'heroicon-m-exclamation-circle')
-                    ->formatStateUsing(fn ($state) => $state ? 'Sí' : 'No')
+                    ->formatStateUsing(fn ($state) => $state ? __('users.table.yes') : __('users.table.no'))
                     ->toggleable(),
             ])
             ->headerActions([
                 AttachAction::make()
                     ->preloadRecordSelect()
-                    ->label('Vincular Usuario'),
+                    ->label(__('companies.relations.attach_user'))
+                    ->form(fn (AttachAction $action): array => [
+                        $action->getRecordSelect(),
+                        Select::make('role_id')
+                            ->label(__('roles.actions.available_role'))
+                            ->relationship(
+                                name: 'rolesAll', 
+                                titleAttribute: 'name',
+                                modifyQueryUsing: function (Builder $query, $livewire) {
+                                    return $livewire->getOwnerRecord()->roles();
+                                }
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->multiple()
+                            ->required()
+                            ->prefixIcon('heroicon-m-identification'),
+                    ])
+                    ->after(function (array $data, $livewire) {
+                        $company = $livewire->getOwnerRecord();
+                        // El recordId viene en la data por defecto del select de Attach
+                        $userId = $data['recordId'] ?? null;
+                        
+                        // Si v3 agrupa los ids en caso de multiple
+                        if (is_array($userId)) {
+                            $userIds = $userId;
+                        } else {
+                            $userIds = [$userId];
+                        }
+
+                        if (!empty($userIds) && !empty($data['role_id'])) {
+                            setPermissionsTeamId($company->id);
+                            foreach ($userIds as $uid) {
+                                $user = \App\Models\User::find($uid);
+                                if ($user) {
+                                    $user->syncRoles($data['role_id']);
+                                }
+                            }
+                            setPermissionsTeamId(null);
+                        }
+                    }),
                 CreateAction::make()
-                    ->label('Crear Usuario')
+                    ->label(__('companies.relations.create_user'))
                     ->schema(fn (CreateAction $action): array => [
                         Grid::make()
                             ->columns(2)
                             ->schema([
                                 TextInput::make('name')
-                                    ->label('Nombre')
+                                    ->label(__('users.fields.name'))
                                     ->required()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-user'),
                                 TextInput::make('email')
-                                    ->label('Correo Electrónico')
+                                    ->label(__('users.fields.email'))
                                     ->required()
                                     ->email()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-envelope'),
                                 TextInput::make('password')
-                                    ->label('Contraseña')
+                                    ->label(__('users.fields.password'))
                                     ->required()
                                     ->password()
                                     ->maxLength(255)
@@ -92,14 +135,14 @@ class UsersRelationManager extends RelationManager
                                     ->confirmed()
                                     ->prefixIcon('heroicon-m-key'),
                                 TextInput::make('password_confirmation')
-                                    ->label('Confirmar Contraseña')
+                                    ->label(__('users.fields.password_confirmation'))
                                     ->required()
                                     ->password()
                                     ->maxLength(255)
                                     ->minLength(8)
                                     ->prefixIcon('heroicon-m-key'),
                                 Select::make('role_id')
-                                    ->label('Rol en la Empresa')
+                                    ->label(__('roles.actions.available_role'))
                                     ->relationship(
                                         name: 'rolesAll', 
                                         titleAttribute: 'name',

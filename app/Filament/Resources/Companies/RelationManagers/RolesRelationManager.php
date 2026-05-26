@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class RolesRelationManager extends RelationManager
 {
@@ -21,14 +22,17 @@ class RolesRelationManager extends RelationManager
 
     protected static ?string $relatedResource = RoleResource::class;
     
-    protected static ?string $title = 'Roles de la Empresa';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('companies.relations.roles');
+    }
 
     public function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre del Rol')
+                    ->label(__('roles.table.role'))
                     ->badge()
                     ->color('primary')
                     ->icon('heroicon-m-identification')
@@ -37,28 +41,28 @@ class RolesRelationManager extends RelationManager
                     ->sortable(),
 
                 TextColumn::make('guard_name')
-                    ->label('Guardia')
+                    ->label(__('roles.table.guard'))
                     ->badge()
                     ->color('gray')
                     ->icon('heroicon-m-shield-check'),
 
                 TextColumn::make('users_count')
                     ->counts('users')
-                    ->label('Usuarios Asignados')
+                    ->label(__('roles.table.assigned_users'))
                     ->badge()
                     ->color('success')
                     ->icon('heroicon-m-users'),
             ])
             ->headerActions([
                 CreateAction::make()
-                    ->label('Crear Rol')
+                    ->label(__('companies.relations.create_role'))
                     ->schema(fn (CreateAction $action): array => [
                         TextInput::make('name')
-                            ->label('Nombre del Rol')
+                            ->label(__('roles.table.role'))
                             ->required()
                             ->prefixIcon('heroicon-m-identification'),
                         TextInput::make('guard_name')
-                            ->label('Guard (Sistema)')
+                            ->label(__('roles.table.guard'))
                             ->default('web')
                             ->required()
                             ->disabled()

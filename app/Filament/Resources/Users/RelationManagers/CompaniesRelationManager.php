@@ -14,42 +14,47 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
+use Illuminate\Database\Eloquent\Model;
+
 class CompaniesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'company';
+    protected static string $relationship = 'companies';
 
     protected static ?string $relatedResource = CompanyResource::class;
     
-    protected static ?string $title = 'Empresas Asignadas';
+    public static function getTitle(Model $ownerRecord, string $pageClass): string
+    {
+        return __('companies.relations.assigned');
+    }
 
     public function table(Table $table): Table
     {
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nombre Comercial')
+                    ->label(__('companies.fields.name'))
                     ->weight('bold')
                     ->icon('heroicon-m-building-office-2')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('slug')
-                    ->label('Slug')
+                    ->label(__('companies.fields.slug'))
                     ->badge()
                     ->color('gray')
                     ->icon('heroicon-m-link'),
 
                 TextColumn::make('is_active')
-                    ->label('Estado')
+                    ->label(__('companies.table.status'))
                     ->badge()
                     ->color(fn ($state) => $state ? 'success' : 'danger')
-                    ->formatStateUsing(fn ($state) => $state ? 'Activa' : 'Inactiva')
+                    ->formatStateUsing(fn ($state) => $state ? __('companies.table.active') : __('companies.table.inactive'))
                     ->icon(fn ($state) => $state ? 'heroicon-m-check-circle' : 'heroicon-m-x-circle'),
             ])
             ->headerActions([
                 AttachAction::make()
                     ->preloadRecordSelect()
-                    ->label('Asignar Empresa'),
+                    ->label(__('companies.relations.assign_company')),
             ])
             ->recordActions([
                 ViewAction::make(),

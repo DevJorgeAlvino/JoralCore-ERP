@@ -8,10 +8,12 @@ use Filament\Actions\EditAction as ActionsEditAction;
 use Filament\Actions\ForceDeleteBulkAction as ActionsForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction as ActionsRestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use App\Models\Item;
 
 class ItemsTable
 {
@@ -20,22 +22,22 @@ class ItemsTable
         return $table
             ->columns([
                 TextColumn::make('sku')
-                    ->label('SKU')
+                    ->label(__('items.infolist.fields.sku'))
+                    ->searchable()
+                    ->sortable()
+                    ->badge()
+                    ->color('gray')
+                    ->toggleable(),
+
+                TextColumn::make('name')
+                    ->label(__('items.table.item'))
                     ->searchable()
                     ->sortable()
                     ->weight('bold')
-                    ->color('gray')
-                    ->copyable(),
-
-                TextColumn::make('name')
-                    ->label('Artículo')
-                    ->searchable()
-                    ->sortable()
-                    ->description(fn ($record) => Str::limit($record->description ?? '', 40))
-                    ->weight('bold'),
+                    ->description(fn (Item $record): string => Str::limit($record->description ?? '', 50)),
 
                 TextColumn::make('type')
-                    ->label('Tipo')
+                    ->label(__('items.table.type'))
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'product' => 'success',
@@ -43,78 +45,80 @@ class ItemsTable
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'product' => 'Producto',
-                        'service' => 'Servicio',
+                        'product' => __('items.infolist.fields.product'),
+                        'service' => __('items.infolist.fields.service'),
                         default => $state,
                     })
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('sale_price')
-                    ->label('Precio Venta')
+                    ->label(__('items.infolist.fields.sale_price'))
                     ->money()
                     ->sortable()
-                    ->color('success')
                     ->weight('bold')
-                    ->alignment('right'),
+                    ->color('success')
+                    ->toggleable(),
 
                 TextColumn::make('current_stock')
-                    ->label('Stock')
+                    ->label(__('items.table.stock'))
                     ->numeric()
                     ->sortable()
-                    ->alignment('right')
                     ->badge()
-                    ->color(function ($state, $record) {
-                        if ($record->type === 'service' || !$record->manage_stock) return 'gray';
-                        return $state <= $record->minimum_stock ? 'danger' : 'success';
-                    })
-                    ->formatStateUsing(function ($state, $record) {
-                        if ($record->type === 'service' || !$record->manage_stock) return '-';
-                        return $state;
-                    }),
+                    ->color(fn (Item $record): string => 
+                        $record->current_stock <= $record->minimum_stock ? 'danger' : 'success'
+                    )
+                    ->formatStateUsing(fn (Item $record): string => 
+                        $record->manage_stock ? (string) $record->current_stock : 'N/A'
+                    )
+                    ->toggleable(),
 
-                ToggleColumn::make('is_active')
-                    ->label('Activo')
-                    ->sortable(),
+                IconColumn::make('is_active')
+                    ->label(__('items.infolist.fields.is_active'))
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
 
-                // Columnas ocultas por defecto
                 TextColumn::make('barcode')
-                    ->label('Código de Barras')
+                    ->label(__('items.infolist.fields.barcode'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 
                 TextColumn::make('purchase_cost')
-                    ->label('Costo')
+                    ->label(__('items.infolist.fields.purchase_cost'))
                     ->money()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('unitMeasure.name')
-                    ->label('Und. Medida')
-                    ->searchable()
+                    ->label(__('items.infolist.fields.unit_measure'))
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('tax_type')
-                    ->label('Impuesto')
+                    ->label(__('items.infolist.fields.tax_type'))
+                    ->badge()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('company.name')
-                    ->label('Empresa')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->label(__('items.infolist.fields.company'))
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('created_at')
-                    ->label('Creación')
+                    ->label(__('items.infolist.fields.created_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
-                    ->label('Actualización')
+                    ->label(__('items.infolist.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('deleted_at')
-                    ->label('Eliminado')
+                    ->label(__('items.infolist.fields.deleted_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

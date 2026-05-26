@@ -22,68 +22,63 @@ class ItemInfolist
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('Información Principal')
-                                    ->description('Datos básicos de identificación y descripción del artículo.')
+                                Section::make(__('items.infolist.sections.main_info'))
+                                    ->description(__('items.infolist.sections.main_info_desc'))
                                     ->icon('heroicon-o-cube')
                                     ->schema([
 
                                         TextEntry::make('name')
-                                            ->label('Nombre')
+                                            ->label(__('items.infolist.fields.name'))
                                             ->weight('bold'),
                                         TextEntry::make('sku')
-                                            ->label('SKU')
+                                            ->label(__('items.infolist.fields.sku'))
                                             ->badge(),
                                         TextEntry::make('barcode')
-                                            ->label('Código de Barras')
+                                            ->label(__('items.infolist.fields.barcode'))
                                             ->placeholder('-'),
                                         TextEntry::make('slug')
-                                            ->label('Slug')
+                                            ->label(__('items.infolist.fields.slug'))
                                             ->color('gray'),
                                         TextEntry::make('description')
-                                            ->label('Descripción')
+                                            ->label(__('items.infolist.fields.description'))
                                             ->placeholder('-')
                                             ->columnSpanFull(),
                                     ])->columns(2),
 
-                                Section::make('Precios e Impuestos')
-                                    ->description('Configuración de costos, precios de venta y detalles fiscales.')
+                                Section::make(__('items.infolist.sections.prices_taxes'))
+                                    ->description(__('items.infolist.sections.prices_taxes_desc'))
                                     ->icon('heroicon-o-currency-dollar')
                                     ->schema([
                                         TextEntry::make('purchase_cost')
-                                            ->label('Costo de Compra')
+                                            ->label(__('items.infolist.fields.purchase_cost'))
                                             ->money(),
                                         TextEntry::make('sale_price')
-                                            ->label('Precio de Venta')
+                                            ->label(__('items.infolist.fields.sale_price'))
                                             ->money()
                                             ->weight('bold')
                                             ->color('success'),
                                         TextEntry::make('tax_type')
-                                            ->label('Tipo de Impuesto')
+                                            ->label(__('items.infolist.fields.tax_type'))
                                             ->badge(),
                                         TextEntry::make('specific_taxes')
-                                            ->label('Impuestos Específicos')
+                                            ->label(__('items.infolist.fields.specific_taxes'))
                                             ->placeholder('-'),
                                     ])->columns(2),
 
-                                Section::make('Galería de Imágenes')
-                                    ->description('Fotos y material visual del artículo.')
+                                Section::make(__('items.infolist.sections.gallery'))
+                                    ->description(__('items.infolist.sections.gallery_desc'))
                                     ->icon('heroicon-o-photo')
                                     ->schema([
                                         ImageEntry::make('images')
                                             ->hiddenLabel()
                                             ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
-                                            // ->height(150)
-                                            // ->extraImgAttributes([
-                                            //     'class' => 'rounded-lg shadow-sm',
-                                            //     'style' => 'object-fit: cover;',
-                                            // ])
                                             ->limit(10)
                                             ->columnSpanFull()
                                             ->visible(fn (Item $record) => !empty($record->images)),
                                             
                                         TextEntry::make('no_images_placeholder')
                                             ->hiddenLabel()
-                                            ->default('No se ha subido ninguna imagen para este artículo.')
+                                            ->default(__('items.infolist.fields.no_images'))
                                             ->color('gray')
                                             ->icon('heroicon-m-exclamation-circle')
                                             ->visible(fn (Item $record) => empty($record->images)),
@@ -93,15 +88,15 @@ class ItemInfolist
 
                         Group::make()
                             ->schema([
-                                Section::make('Organización')
-                                    ->description('Clasificación y disponibilidad en el sistema.')
+                                Section::make(__('items.infolist.sections.organization'))
+                                    ->description(__('items.infolist.sections.organization_desc'))
                                     ->icon('heroicon-o-building-office')
                                     ->schema([
                                         TextEntry::make('company.name')
-                                            ->label('Empresa')
+                                            ->label(__('items.infolist.fields.company'))
                                             ->visible(fn () => \Filament\Facades\Filament::getTenant() === null),
                                         TextEntry::make('type')
-                                            ->label('Tipo de Artículo')
+                                            ->label(__('items.infolist.fields.item_type'))
                                             ->badge()
                                             ->color(fn (string $state): string => match ($state) {
                                                 'product' => 'success',
@@ -109,52 +104,52 @@ class ItemInfolist
                                                 default => 'gray',
                                             })
                                             ->formatStateUsing(fn (string $state): string => match ($state) {
-                                                'product' => 'Producto',
-                                                'service' => 'Servicio',
+                                                'product' => __('items.infolist.fields.product'),
+                                                'service' => __('items.infolist.fields.service'),
                                                 default => $state,
                                             }),
                                         TextEntry::make('unitMeasure.name')
-                                            ->label('Unidad de Medida'),
+                                            ->label(__('items.infolist.fields.unit_measure')),
                                         IconEntry::make('is_active')
-                                            ->label('Activo')
+                                            ->label(__('items.infolist.fields.is_active'))
                                             ->boolean(),
                                     ]),
-                                Section::make('Inventario')
-                                    ->description('Gestión de stock actual y niveles mínimos para alertas.')
+                                Section::make(__('items.infolist.sections.inventory'))
+                                    ->description(__('items.infolist.sections.inventory_desc'))
                                     ->icon('heroicon-o-archive-box')
                                     ->schema([
                                         IconEntry::make('manage_stock')
-                                            ->label('Controla Stock')
+                                            ->label(__('items.infolist.fields.manage_stock'))
                                             ->columnSpan(2)
                                             ->boolean(),
                                         TextEntry::make('current_stock')
-                                            ->label('Stock Actual')
+                                            ->label(__('items.infolist.fields.current_stock'))
                                             ->numeric()
                                             ->badge()
                                             ->color(fn ($state, Item $record) => $state <= $record->minimum_stock ? 'danger' : 'success'),
                                         TextEntry::make('minimum_stock')
-                                            ->label('Stock Mínimo')
+                                            ->label(__('items.infolist.fields.minimum_stock'))
                                             ->numeric(),
                                     ])->columns(2)
                                     ->visible(fn (Item $record) => $record->type === 'product'),
-                                Section::make('Metadatos')
-                                    ->description('Registro de auditoría.')
+                                Section::make(__('items.infolist.sections.metadata'))
+                                    ->description(__('items.infolist.sections.metadata_desc'))
                                     ->icon('heroicon-o-clock')
                                     ->schema([
                                         TextEntry::make('id')
-                                            ->label('ID Interno')
+                                            ->label(__('items.infolist.fields.internal_id'))
                                             ->color('gray')
                                             ->copyable(),
                                         TextEntry::make('created_at')
-                                            ->label('Creación')
+                                            ->label(__('items.infolist.fields.created_at'))
                                             ->dateTime()
                                             ->placeholder('-'),
                                         TextEntry::make('updated_at')
-                                            ->label('Última Actualización')
+                                            ->label(__('items.infolist.fields.updated_at'))
                                             ->dateTime()
                                             ->placeholder('-'),
                                         TextEntry::make('deleted_at')
-                                            ->label('Eliminado el')
+                                            ->label(__('items.infolist.fields.deleted_at'))
                                             ->dateTime()
                                             ->color('danger')
                                             ->visible(fn (Item $record): bool => $record->trashed()),

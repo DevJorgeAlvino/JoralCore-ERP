@@ -17,8 +17,8 @@ class ListItems extends ListRecords
         return [
             \Filament\Actions\ImportAction::make()
                 ->importer(\App\Filament\Imports\ItemImporter::class)
-                ->label('Importar Ítems')
-                ->modalDescription(new \Illuminate\Support\HtmlString('El sistema procesa y mapea nativamente archivos CSV para asegurar un rendimiento óptimo. Si usas Excel, guarda tu archivo como .csv antes de subirlo.<br><br><strong><span style="color: #eab308;">⚠️ Límite máximo: 10,000 registros por archivo.</span></strong>'))
+                ->label(__('items.actions.import'))
+                ->modalDescription(new \Illuminate\Support\HtmlString(__('items.actions.import_desc')))
                 ->icon('heroicon-o-arrow-up-tray')
                 ->maxRows(10000)
                 ->color('secondary')

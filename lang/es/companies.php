@@ -31,4 +31,20 @@ return [
         'updated_at' => 'Última Actualización',
         'deleted_at' => 'Fecha de Eliminación',
     ],
+    
+    'table' => [
+        'status' => 'Estado',
+        'active' => 'Activa',
+        'inactive' => 'Inactiva',
+    ],
+    
+    'relations' => [
+        'assigned' => 'Empresas Asignadas',
+        'assign_company' => 'Asignar Empresa',
+        'assigned_users' => 'Usuarios Asignados',
+        'attach_user' => 'Vincular Usuario',
+        'create_user' => 'Crear Usuario',
+        'roles' => 'Roles de la Empresa',
+        'create_role' => 'Crear Rol',
+    ],
 ];
