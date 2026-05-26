@@ -103,7 +103,8 @@ class ItemsTable
                 TextColumn::make('company.name')
                     ->label(__('items.infolist.fields.company'))
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
 
                 TextColumn::make('created_at')
                     ->label(__('items.infolist.fields.created_at'))

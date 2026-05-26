@@ -154,7 +154,7 @@ class ItemForm
                                             ->native(false)
                                             ->required()
                                             ->live()
-                                            ->visible(fn () => Filament::getTenant() === null),
+                                            ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
 
                                         Select::make('type')
                                             ->label('Tipo de Artículo')
@@ -169,7 +169,18 @@ class ItemForm
 
                                         Select::make('unit_measure_id')
                                             ->label('Unidad de Medida')
-                                            ->relationship('unitMeasure', 'name')
+                                            ->relationship(
+                                                name: 'unitMeasure',
+                                                titleAttribute: 'name',
+                                                modifyQueryUsing: function ($query, Get $get) {
+                                                    $companyId = $get('company_id') ?? filament()->getTenant()?->id;
+                                                    if ($companyId) {
+                                                        $query->where('company_id', $companyId);
+                                                    } else {
+                                                        $query->whereRaw('1 = 0'); // No results if no company selected
+                                                    }
+                                                }
+                                            )
                                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
                                             ->searchable()
                                             ->preload()

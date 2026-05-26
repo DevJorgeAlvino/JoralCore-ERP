@@ -22,7 +22,8 @@ class ListItems extends ListRecords
                 ->icon('heroicon-o-arrow-up-tray')
                 ->maxRows(10000)
                 ->color('secondary')
-                ->modalWidth('3xl'),
+                ->modalWidth('3xl')
+                ->options(['company_id' => filament()->getTenant()?->id]),
 
             CreateAction::make()
                 ->modalWidth('7xl')

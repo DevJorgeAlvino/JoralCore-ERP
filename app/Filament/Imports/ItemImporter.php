@@ -90,7 +90,7 @@ class ItemImporter extends Importer
                 ->required()
                 ->searchable()
                 // Solo se muestra en el panel de Administración
-                ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()->getId() === 'admin'),
+                ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
         ];
     }
 

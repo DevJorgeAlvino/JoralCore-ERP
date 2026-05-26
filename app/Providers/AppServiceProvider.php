@@ -206,8 +206,9 @@ class AppServiceProvider extends ServiceProvider
                             $companyId = \Filament\Facades\Filament::getTenant()?->id;
                             $query->where('company_id', $companyId);
                         } elseif ($panel->getId() === 'admin') {
-                            // Panel Admin: solo notificaciones globales (sin company_id)
-                            $query->whereNull('company_id');
+                            // Panel Admin: no filtramos para que el admin pueda ver las respuestas 
+                            // de las importaciones que hizo, aunque tengan un company_id asignado.
+                            // $query->whereNull('company_id');
                         }
                     }
                 } catch (\Throwable $e) {
