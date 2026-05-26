@@ -27,6 +27,10 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static bool $isScopedToTenant = true;
+    
+    protected static ?string $tenantOwnershipRelationshipName = 'companies';
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'email'];
@@ -54,17 +58,15 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-
-        
-        return [
-           
-                // Aquí pones tus relaciones separadas por coma
-                CompaniesRelationManager::class,
-                RolesRelationManager::class,
-                // RelationManagers\OtraRelacionManager::class,
-            
-           
+        $relations = [
+            RolesRelationManager::class,
         ];
+
+        if (\Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin') {
+            array_unshift($relations, CompaniesRelationManager::class);
+        }
+
+        return $relations;
     }
 
     public static function getPages(): array
@@ -76,11 +78,14 @@ class UserResource extends Resource
         ];
     }
 
-    public static function getRecordRouteBindingEloquentQuery(): Builder
+    public static function getEloquentQuery(): Builder
     {
-        return parent::getRecordRouteBindingEloquentQuery()
+        $tenant = \Filament\Facades\Filament::getTenant();
+
+        return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->when($tenant, fn ($query) => $query->whereHas('companies', fn ($q) => $q->where('companies.id', $tenant->id)));
     }
 }

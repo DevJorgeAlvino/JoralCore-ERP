@@ -10,6 +10,7 @@ return [
     ],
 
     'fields' => [
+        'company' => 'Company',
         'code' => 'Code',
         'name' => 'Name',
         'country' => 'Country',

@@ -26,6 +26,8 @@ class UnitMeasureResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static bool $isScopedToTenant = true;
+
     public static function getGloballySearchableAttributes(): array
     {
         return ['name', 'code', 'country'];

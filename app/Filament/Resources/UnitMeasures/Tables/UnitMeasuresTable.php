@@ -18,6 +18,12 @@ class UnitMeasuresTable
     {
         return $table
             ->columns([
+                TextColumn::make('company.name')
+                    ->label(__('unit_measures.fields.company'))
+                    ->sortable()
+                    ->searchable()
+                    ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
+
                 TextColumn::make('code')
                     ->label(__('unit_measures.fields.code'))
                     ->searchable()

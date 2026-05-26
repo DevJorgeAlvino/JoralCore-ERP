@@ -18,6 +18,14 @@ class UnitMeasureForm
                     ->icon('heroicon-o-information-circle')
                     ->schema([
                         Grid::make(2)->schema([
+                            \Filament\Forms\Components\Select::make('company_id')
+                                ->label(__('unit_measures.fields.company'))
+                                ->relationship('company', 'name')
+                                ->searchable()
+                                ->required()
+                                ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin')
+                                ->columnSpanFull(),
+
                             TextInput::make('code')
                                 ->label(__('unit_measures.fields.code'))
                                 ->required()

@@ -98,6 +98,8 @@ class CompanyPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Company/Resources'), for: 'App\Filament\Company\Resources')
             ->resources([
                 \App\Filament\Resources\Roles\RoleResource::class,
+                \App\Filament\Resources\UnitMeasures\UnitMeasureResource::class,
+                \App\Filament\Resources\Users\UserResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Company/Pages'), for: 'App\Filament\Company\Pages')
             ->pages([

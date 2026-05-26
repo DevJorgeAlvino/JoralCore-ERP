@@ -10,15 +10,30 @@ class UserStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
-        $totalUsers = User::count();
-        $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+        $tenant = \Filament\Facades\Filament::getTenant();
+
+        if ($tenant) {
+            $totalUsers = $tenant->users()->count();
+            $verifiedUsers = $tenant->users()->whereNotNull('email_verified_at')->count();
+            $title = __('users.widgets.stats.company_total');
+            $desc = __('users.widgets.stats.company_total_desc');
+            $icon = 'heroicon-m-user-group';
+        } else {
+            $totalUsers = User::count();
+            $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+            $title = __('users.widgets.stats.admin_total');
+            $desc = __('users.widgets.stats.admin_total_desc');
+            $icon = 'heroicon-m-users';
+        }
+
         $unverifiedUsers = $totalUsers - $verifiedUsers;
 
         return [
-            Stat::make(__('users.widgets.stats.admin_total'), $totalUsers)
-                ->description(__('users.widgets.stats.admin_total_desc'))
-                ->descriptionIcon('heroicon-m-users')
-                ->color('primary'),
+            Stat::make($title, $totalUsers)
+                ->description($desc)
+                ->descriptionIcon($icon)
+                ->color('primary')
+                ->chart([7, 2, 10, 3, 15, 4, 17]),
             Stat::make(__('users.widgets.stats.verified'), $verifiedUsers)
                 ->description(__('users.widgets.stats.verified_desc'))
                 ->descriptionIcon('heroicon-m-check-badge')

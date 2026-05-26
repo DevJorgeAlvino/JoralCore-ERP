@@ -77,7 +77,9 @@ class RolesRelationManager extends RelationManager
                         )
                         ->searchable()
                         ->preload()
-                        ->required(),
+                        ->required()
+                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id)
+                        ->hidden(fn () => \Filament\Facades\Filament::getTenant() !== null),
                         TextInput::make('name')
                             ->label(__('users.fields.name'))
                             ->required(),
@@ -91,50 +93,49 @@ class RolesRelationManager extends RelationManager
                     ->icon('heroicon-m-link')
                     ->color('primary')
                     ->modalWidth('md')
-                    ->form([
-                        
-                        // 1. PRIMER SELECT: La Empresa
-                        Select::make('company_id')
-                            ->label(__('companies.single'))
-                            ->placeholder(__('roles.actions.select_company_first'))
-                            ->searchable()
-                            ->preload() // Seguro porque un usuario raramente tiene miles de empresas asignadas
-                            ->options(function ($livewire) {
-                                // Traemos solo las empresas asignadas al usuario que editamos
-                                return $livewire->getOwnerRecord()
-                                    ->companies() // O ->companies() según tu modelo
-                                    ->pluck('companies.name', 'companies.id');
-                            })
-                            ->required()
-                            ->live() // ⚡️ ESTO ES VITAL: Avisa al formulario cuando cambia
-                            ->afterStateUpdated(fn (UtilitiesSet $set) => $set('role_id', null)), // Limpia el rol si cambias de empresa
+                    ->form(function () {
+                        $tenant = \Filament\Facades\Filament::getTenant();
+                        return [
+                            // 1. PRIMER SELECT: La Empresa
+                            Select::make('company_id')
+                                ->label(__('companies.single'))
+                                ->placeholder(__('roles.actions.select_company_first'))
+                                ->searchable()
+                                ->preload()
+                                ->options(function ($livewire) {
+                                    return $livewire->getOwnerRecord()
+                                        ->companies()
+                                        ->pluck('companies.name', 'companies.id');
+                                })
+                                ->required()
+                                ->live()
+                                ->afterStateUpdated(fn (UtilitiesSet $set) => $set('role_id', null))
+                                ->default($tenant?->id)
+                                ->hidden($tenant !== null),
 
-                        // 2. SEGUNDO SELECT: El Rol (Dependiente)
-                        Select::make('role_id')
-                            ->label(__('roles.actions.available_role'))
-                            ->placeholder(__('roles.actions.select_role'))
-                            ->searchable()
-                            ->preload() // Aquí sí es seguro usar preload porque serán pocos roles (ej. 10 o 20)
-                            
-                            // 👇 MAGIA: Solo se muestra si ya elegiste empresa
-                            ->hidden(fn (UtilitiesGet $get) => ! $get('company_id'))
-                            
-                            // 👇 MAGIA 2: Carga solo los roles de ESA empresa
-                            ->options(function (UtilitiesGet $get, $livewire) {
-                                $companyId = $get('company_id');
-                                if (! $companyId) return [];
+                            // 2. SEGUNDO SELECT: El Rol (Dependiente)
+                            Select::make('role_id')
+                                ->label(__('roles.actions.available_role'))
+                                ->placeholder(__('roles.actions.select_role'))
+                                ->searchable()
+                                ->preload()
+                                ->hidden(fn (UtilitiesGet $get) => ! $get('company_id'))
+                                ->options(function (UtilitiesGet $get, $livewire) {
+                                    $companyId = $get('company_id');
+                                    if (! $companyId) return [];
 
-                                // Opcional: Filtramos roles que YA tiene asignados para no repetir
-                                $user = $livewire->getOwnerRecord();
-                                $rolesYaAsignados = $user->rolesAll()->pluck('roles.id')->toArray();
+                                    $user = $livewire->getOwnerRecord();
+                                    $rolesYaAsignados = $user->rolesAll()->pluck('roles.id')->toArray();
 
-                                return Role::query()
-                                    ->where('company_id', $companyId) // Solo de esta empresa
-                                    ->whereNotIn('roles.id', $rolesYaAsignados) // Que no tenga ya
-                                    ->pluck('name', 'id');
-                            })
-                            ->required(),
-                    ])
+                                    return Role::query()
+                                        ->where('company_id', $companyId)
+                                        ->where('name', '!=', 'super_admin')
+                                        ->whereNotIn('roles.id', $rolesYaAsignados)
+                                        ->pluck('name', 'id');
+                                })
+                                ->required(),
+                        ];
+                    })
                     ->action(function (array $data, $livewire) {
                         $user = $livewire->getOwnerRecord();
                         

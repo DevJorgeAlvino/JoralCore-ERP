@@ -40,10 +40,11 @@ class UsersTable
                     ->separator(',')
                     ->searchable()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable()
+                    ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
 
-                TextColumn::make('roles.name')
-                    ->label(__('users.table.global_roles'))
+                TextColumn::make('rolesAll.name')
+                    ->label(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin' ? __('users.table.global_roles') : __('users.table.roles'))
                     ->badge()
                     ->color('primary')
                     ->separator(',')
