@@ -40,6 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->databaseNotifications()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->brandName($this->getBrandName())
             ->brandLogo($this->getBrandLogo())
             ->favicon($this->getFavicon())
@@ -70,6 +71,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
+                \CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin::make()
+                    ->placeholder(__('Escribe para buscar...')),
             ])
             ->authMiddleware([
                 Authenticate::class,

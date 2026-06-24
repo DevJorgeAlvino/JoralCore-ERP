@@ -41,12 +41,20 @@ class ItemResource extends Resource
     {
         $details = [];
 
+        if (\Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin' && $record->company) {
+            $details['Empresa'] = $record->company->name;
+        }
+
         if ($record->sku) {
             $details['SKU'] = $record->sku;
         }
 
         if ($record->barcode) {
             $details['Código de Barras'] = $record->barcode;
+        }
+
+        if ($record->description) {
+            $details['Descripción'] = $record->description;
         }
 
         // Mostrar las presentaciones asociadas en el resultado de búsqueda
@@ -60,7 +68,7 @@ class ItemResource extends Resource
 
     public static function getGlobalSearchEloquentQuery(): \Illuminate\Database\Eloquent\Builder
     {
-        return parent::getGlobalSearchEloquentQuery()->with(['presentations']);
+        return parent::getGlobalSearchEloquentQuery()->with(['presentations', 'company']);
     }
 
     public static function getModelLabel(): string

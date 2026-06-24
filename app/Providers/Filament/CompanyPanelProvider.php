@@ -45,6 +45,7 @@ class CompanyPanelProvider extends PanelProvider
             ->path('company')
             ->login()
             ->databaseNotifications()
+            ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
            // ─── Branding dinámico por tenant ────────────
             ->brandName(function () {
                 try {
@@ -137,6 +138,8 @@ class CompanyPanelProvider extends PanelProvider
            // Shield se gestiona solo desde el panel Admin (centralizado)
             ->plugins([
                 FilamentShieldPlugin::make(),
+                \CharrafiMed\GlobalSearchModal\GlobalSearchModalPlugin::make()
+                    ->placeholder(__('Escribe para buscar...')),
             ])
             ->tenant(Company::class)
             ->tenantRegistration(RegisterCompany::class)

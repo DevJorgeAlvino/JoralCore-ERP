@@ -36,6 +36,22 @@ class BrandResource extends Resource
         return ['name', 'slug', 'website'];
     }
 
+    public static function getGlobalSearchResultDetails(\Illuminate\Database\Eloquent\Model $record): array
+    {
+        $details = [];
+
+        if (\Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin' && $record->company) {
+            $details['Empresa'] = $record->company->name;
+        }
+
+        return $details;
+    }
+
+    public static function getGlobalSearchEloquentQuery(): Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['company']);
+    }
+
     public static function getModelLabel(): string
     {
         return 'Marca';
