@@ -24,7 +24,7 @@ class EditUser extends EditRecord
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['company_id'] = $this->record->company_id;
-        
+
         return $data;
     }
 
@@ -33,4 +33,3 @@ class EditUser extends EditRecord
         return true; // <--- ¡Esto es todo!
     }
 }
-

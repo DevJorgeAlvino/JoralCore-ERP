@@ -25,7 +25,7 @@ class UserForm
                                     ->required()
                                     ->maxLength(255)
                                     ->prefixIcon('heroicon-m-user'),
-                                
+
                                 TextInput::make('email')
                                     ->label(__('users.fields.email'))
                                     ->required()
@@ -50,7 +50,7 @@ class UserForm
                                     ->required(fn (string $operation): bool => $operation === 'create')
                                     ->confirmed()
                                     ->prefixIcon('heroicon-m-key'),
-                                
+
                                 TextInput::make('password_confirmation')
                                     ->label(__('users.fields.password_confirmation'))
                                     ->password()

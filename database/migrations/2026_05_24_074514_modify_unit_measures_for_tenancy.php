@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -29,8 +29,8 @@ return new class extends Migration
 
         Schema::table('unit_measures', function (Blueprint $table) {
             $table->ulid('id')->first();
-            $table->foreignUuid('company_id')->after('id')->constrained('companies')->cascadeOnDelete();
-            
+            $table->foreignUlid('company_id')->after('id')->constrained('companies')->cascadeOnDelete();
+
             // Reasignar la llave primaria al nuevo ID
             $table->primary('id');
             // Hacer que el código sea único por empresa

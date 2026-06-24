@@ -12,14 +12,14 @@ class SetUserCompanyTenant
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
 
-        $user= auth()->user();
+        $user = auth()->user();
 
-        if(!$user){
+        if (! $user) {
             return redirect()->route('filament.company.auth.login');
         }
 
@@ -34,13 +34,13 @@ class SetUserCompanyTenant
 
         $company = $user->companies()->first();
 
-        if(!$company){
+        if (! $company) {
 
             return redirect()->route('filament.company.auth.login');
         }
 
         Filament::setTenant($company);
-        
+
         return $next($request);
     }
 }

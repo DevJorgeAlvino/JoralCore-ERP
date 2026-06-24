@@ -3,12 +3,14 @@
 namespace App\Filament\Company\Pages;
 
 use App\Services\CompanySettingService;
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Actions\Action;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
@@ -18,13 +20,11 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use BackedEnum;
-use UnitEnum;
 use Illuminate\Support\Facades\Storage;
 
 class CompanySettingsPage extends Page
 {
-    use \BezhanSalleh\FilamentShield\Traits\HasPageShield;
+    use HasPageShield;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
@@ -50,7 +50,7 @@ class CompanySettingsPage extends Page
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('save')
+            Action::make('save')
                 ->label('Guardar Configuración')
                 ->action('save')
                 ->color('primary')
@@ -68,15 +68,15 @@ class CompanySettingsPage extends Page
 
         $this->form->fill([
             // Branding
-            'company_logo'       => $settings['company_logo'] ?? null,
-            'company_icon'       => $settings['company_icon'] ?? null,
-            'primary_color'      => $settings['primary_color'] ?? '#f59e0b',
-            'secondary_color'    => $settings['secondary_color'] ?? '#6366f1',
+            'company_logo' => $settings['company_logo'] ?? null,
+            'company_icon' => $settings['company_icon'] ?? null,
+            'primary_color' => $settings['primary_color'] ?? '#f59e0b',
+            'secondary_color' => $settings['secondary_color'] ?? '#6366f1',
             // Operaciones
-            'business_hours'     => $settings['business_hours'] ?? $this->defaultBusinessHours(),
+            'business_hours' => $settings['business_hours'] ?? $this->defaultBusinessHours(),
             'secondary_currency' => $settings['secondary_currency'] ?? null,
-            'exchange_rate'      => $settings['exchange_rate'] ?? null,
-            'stock_alert_min'    => $settings['stock_alert_min'] ?? 10,
+            'exchange_rate' => $settings['exchange_rate'] ?? null,
+            'stock_alert_min' => $settings['stock_alert_min'] ?? 10,
             'stock_alert_enabled' => $settings['stock_alert_enabled'] ?? true,
         ]);
     }
@@ -88,7 +88,7 @@ class CompanySettingsPage extends Page
             ->components([
 
                 Grid::make(['default' => 1, 'lg' => 2])->schema([
-                    
+
                     // ─── Columna Izquierda ───
                     Group::make()->schema([
                         Section::make(__('settings.sections.company_branding'))
@@ -101,6 +101,7 @@ class CompanySettingsPage extends Page
                                     ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
                                     ->directory(function () {
                                         $tenantUlid = filament()->getTenant()?->id;
+
                                         return "companies/company_{$tenantUlid}/branding";
                                     })
                                     ->visibility('public')
@@ -113,6 +114,7 @@ class CompanySettingsPage extends Page
                                     ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
                                     ->directory(function () {
                                         $tenantUlid = filament()->getTenant()?->id;
+
                                         return "companies/company_{$tenantUlid}/branding";
                                     })
                                     ->visibility('public')
@@ -189,13 +191,13 @@ class CompanySettingsPage extends Page
                                 Select::make('day')
                                     ->label(__('settings.fields.day'))
                                     ->options([
-                                        'lunes'     => __('settings.days.lunes'),
-                                        'martes'    => __('settings.days.martes'),
+                                        'lunes' => __('settings.days.lunes'),
+                                        'martes' => __('settings.days.martes'),
                                         'miércoles' => __('settings.days.miércoles'),
-                                        'jueves'    => __('settings.days.jueves'),
-                                        'viernes'   => __('settings.days.viernes'),
-                                        'sábado'    => __('settings.days.sábado'),
-                                        'domingo'   => __('settings.days.domingo'),
+                                        'jueves' => __('settings.days.jueves'),
+                                        'viernes' => __('settings.days.viernes'),
+                                        'sábado' => __('settings.days.sábado'),
+                                        'domingo' => __('settings.days.domingo'),
                                     ])
                                     ->required()
                                     ->native(false),
@@ -230,7 +232,7 @@ class CompanySettingsPage extends Page
         $companyId = Filament::getTenant()->id;
         $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
 
-         // Borrar logo anterior si se sube uno nuevo
+        // Borrar logo anterior si se sube uno nuevo
         $oldLogo = CompanySettingService::get($companyId, 'company_logo');
         if ($oldLogo && $oldLogo !== $data['company_logo']) {
             if (Storage::disk($disk)->exists($oldLogo)) {
@@ -267,9 +269,9 @@ class CompanySettingsPage extends Page
         $days = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
 
         return array_map(fn (string $day) => [
-            'day'    => $day,
-            'open'   => '08:00',
-            'close'  => '18:00',
+            'day' => $day,
+            'open' => '08:00',
+            'close' => '18:00',
             'active' => true,
         ], $days);
     }

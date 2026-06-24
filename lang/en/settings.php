@@ -6,7 +6,7 @@ return [
     'company_title' => 'Company Settings',
     'company_nav' => 'Settings',
     'system_group' => 'System',
-    
+
     'sections' => [
         'branding' => 'System Branding',
         'branding_desc' => 'Logo and name shown on the ERP login screen.',
@@ -23,7 +23,7 @@ return [
         'stock' => 'Stock Alerts',
         'stock_desc' => 'Parameters for low inventory notifications.',
     ],
-    
+
     'fields' => [
         'app_name' => 'Application Name',
         'app_logo' => 'Main Logo',
@@ -41,7 +41,7 @@ return [
         'stock_alert_enabled' => 'Alerts Enabled',
         'stock_alert_min' => 'Minimum Stock',
     ],
-    
+
     'helpers' => [
         'app_name' => 'Shown in the browser tab and login screen.',
         'logo_admin' => 'Recommended: transparent PNG, 400×100px. Max 2MB.',
@@ -53,7 +53,7 @@ return [
         'stock_toggle' => 'Enables or disables minimum stock notifications.',
         'stock_min' => 'Minimum quantity of units before generating an alert.',
     ],
-    
+
     'messages' => [
         'saved_global' => 'Global changes will be applied on the next load.',
         'saved_company' => 'Changes will be applied on the next panel load.',
@@ -68,5 +68,5 @@ return [
         'viernes' => 'Friday',
         'sábado' => 'Saturday',
         'domingo' => 'Sunday',
-    ]
+    ],
 ];

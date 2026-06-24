@@ -10,7 +10,7 @@ return [
         'password' => 'Contraseña',
         'password_confirmation' => 'Confirmar Contraseña',
     ],
-    
+
     'widgets' => [
         'stats' => [
             'admin_total' => 'Total Usuarios',

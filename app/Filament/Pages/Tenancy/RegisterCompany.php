@@ -28,7 +28,7 @@ class RegisterCompany extends RegisterTenant
                     ->maxLength(255),
                 TextInput::make('description')
                     ->label('Descripción')
-                    ->maxLength(255)
+                    ->maxLength(255),
             ]);
     }
 

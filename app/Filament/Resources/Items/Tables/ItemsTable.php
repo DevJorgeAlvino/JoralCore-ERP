@@ -2,18 +2,17 @@
 
 namespace App\Filament\Resources\Items\Tables;
 
+use App\Models\Item;
 use Filament\Actions\BulkActionGroup as ActionsBulkActionGroup;
 use Filament\Actions\DeleteBulkAction as ActionsDeleteBulkAction;
-use Filament\Actions\EditAction as ActionsEditAction;
 use Filament\Actions\ForceDeleteBulkAction as ActionsForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction as ActionsRestoreBulkAction;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Facades\Filament;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use App\Models\Item;
 
 class ItemsTable
 {
@@ -65,11 +64,9 @@ class ItemsTable
                     ->numeric()
                     ->sortable()
                     ->badge()
-                    ->color(fn (Item $record): string => 
-                        $record->current_stock <= $record->minimum_stock ? 'danger' : 'success'
+                    ->color(fn (Item $record): string => $record->current_stock <= $record->minimum_stock ? 'danger' : 'success'
                     )
-                    ->formatStateUsing(fn (Item $record): string => 
-                        $record->manage_stock ? (string) $record->current_stock : 'N/A'
+                    ->formatStateUsing(fn (Item $record): string => $record->manage_stock ? (string) $record->current_stock : 'N/A'
                     )
                     ->toggleable(),
 
@@ -83,7 +80,7 @@ class ItemsTable
                     ->label(__('items.infolist.fields.barcode'))
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 TextColumn::make('purchase_cost')
                     ->label(__('items.infolist.fields.purchase_cost'))
                     ->money()
@@ -104,7 +101,7 @@ class ItemsTable
                     ->label(__('items.infolist.fields.company'))
                     ->sortable()
                     ->toggleable()
-                    ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
+                    ->visible(fn () => Filament::getCurrentPanel()?->getId() === 'admin'),
 
                 TextColumn::make('created_at')
                     ->label(__('items.infolist.fields.created_at'))
@@ -126,7 +123,7 @@ class ItemsTable
             ])
             ->filters([
                 TrashedFilter::make()
-                ->native(false),
+                    ->native(false),
             ])
             ->bulkActions([
                 ActionsBulkActionGroup::make([

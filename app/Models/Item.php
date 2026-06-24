@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class Item extends Model
 {
-    use SoftDeletes, HasUlids;
+    use HasUlids, SoftDeletes;
 
     protected $fillable = [
         'company_id',
@@ -20,6 +21,8 @@ class Item extends Model
         'slug',
         'description',
         'type',
+        'category_id',
+        'brand_id',
         'unit_measure_id',
         'purchase_cost',
         'sale_price',
@@ -43,6 +46,11 @@ class Item extends Model
         'images' => 'array',
     ];
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     protected static function booted()
     {
         static::creating(function ($item) {
@@ -63,8 +71,28 @@ class Item extends Model
         return $this->belongsTo(Company::class);
     }
 
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
     public function unitMeasure(): BelongsTo
     {
         return $this->belongsTo(UnitMeasure::class);
+    }
+
+    public function presentations(): HasMany
+    {
+        return $this->hasMany(ItemPresentation::class);
+    }
+
+    public function defaultPresentation(): ?ItemPresentation
+    {
+        return $this->presentations()->where('is_default', true)->first();
     }
 }

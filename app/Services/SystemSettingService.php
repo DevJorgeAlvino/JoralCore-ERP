@@ -25,7 +25,7 @@ class SystemSettingService
     {
 
         return Cache::remember(
-            self::CACHE_PREFIX . $key,
+            self::CACHE_PREFIX.$key,
             self::CACHE_TTL,
             fn () => SystemSetting::where('key', $key)->first()?->value ?? $default,
         ) ?? $default;
@@ -41,8 +41,8 @@ class SystemSettingService
             ['value' => $value],
         );
 
-        Cache::forget(self::CACHE_PREFIX . $key);
-        Cache::forget(self::CACHE_PREFIX . 'all');
+        Cache::forget(self::CACHE_PREFIX.$key);
+        Cache::forget(self::CACHE_PREFIX.'all');
     }
 
     /**
@@ -53,7 +53,7 @@ class SystemSettingService
     {
 
         return Cache::remember(
-            self::CACHE_PREFIX . 'all',
+            self::CACHE_PREFIX.'all',
             self::CACHE_TTL,
             fn () => SystemSetting::all()
                 ->mapWithKeys(fn (SystemSetting $s) => [$s->key => $s->value])
@@ -68,7 +68,7 @@ class SystemSettingService
     {
         SystemSetting::where('key', $key)->delete();
 
-        Cache::forget(self::CACHE_PREFIX . $key);
-        Cache::forget(self::CACHE_PREFIX . 'all');
+        Cache::forget(self::CACHE_PREFIX.$key);
+        Cache::forget(self::CACHE_PREFIX.'all');
     }
 }

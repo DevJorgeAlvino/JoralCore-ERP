@@ -2,27 +2,25 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\SystemSetting;
-use App\Providers\Filament\AdminPanelProvider;
 use App\Services\SystemSettingService;
+use BackedEnum;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
+use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\ToggleButtons;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use BackedEnum;
-use UnitEnum;
 use Illuminate\Support\Facades\Storage;
 
 class GlobalSettingsPage extends Page
 {
-    use \BezhanSalleh\FilamentShield\Traits\HasPageShield;
+    use HasPageShield;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
@@ -48,7 +46,7 @@ class GlobalSettingsPage extends Page
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('save')
+            Action::make('save')
                 ->label('Guardar Configuración')
                 ->action('save')
                 ->color('primary')
@@ -64,10 +62,10 @@ class GlobalSettingsPage extends Page
         $settings = SystemSettingService::all();
 
         $this->form->fill([
-            'app_name'        => $settings['app_name'] ?? 'JoralERP',
-            'app_logo'        => $settings['app_logo'] ?? null,
-            'app_favicon'     => $settings['app_favicon'] ?? null,
-            'color_primary'   => $settings['color_primary'] ?? '#f59e0b',
+            'app_name' => $settings['app_name'] ?? 'JoralERP',
+            'app_logo' => $settings['app_logo'] ?? null,
+            'app_favicon' => $settings['app_favicon'] ?? null,
+            'color_primary' => $settings['color_primary'] ?? '#f59e0b',
             'color_secondary' => $settings['color_secondary'] ?? '#6366f1',
         ]);
     }
@@ -78,7 +76,7 @@ class GlobalSettingsPage extends Page
             ->statePath('data')
             ->components([
                 Grid::make(['default' => 1, 'lg' => 2])->schema([
-                    
+
                     // Columna Izquierda
                     Group::make()->schema([
                         Section::make(__('settings.sections.branding'))
@@ -108,7 +106,7 @@ class GlobalSettingsPage extends Page
                                     ->visibility('public')
                                     ->maxSize(512)
                                     ->helperText(__('settings.helpers.favicon')),
-                            ])
+                            ]),
                     ])->columnSpan(1),
 
                     // Columna Derecha

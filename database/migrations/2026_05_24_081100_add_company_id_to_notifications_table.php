@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('notifications', function (Blueprint $table) {
             // Nullable: NULL = admin panel notification, UUID = company panel notification
-            $table->foreignUuid('company_id')
+            $table->foreignUlid('company_id')
                 ->nullable()
                 ->after('read_at')
                 ->constrained('companies')

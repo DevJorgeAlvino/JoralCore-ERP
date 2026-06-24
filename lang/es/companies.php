@@ -31,13 +31,13 @@ return [
         'updated_at' => 'Última Actualización',
         'deleted_at' => 'Fecha de Eliminación',
     ],
-    
+
     'table' => [
         'status' => 'Estado',
         'active' => 'Activa',
         'inactive' => 'Inactiva',
     ],
-    
+
     'relations' => [
         'assigned' => 'Empresas Asignadas',
         'assign_company' => 'Asignar Empresa',

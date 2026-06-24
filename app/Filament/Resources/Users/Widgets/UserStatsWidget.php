@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Widgets;
 
 use App\Models\User;
+use Filament\Facades\Filament;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -10,7 +11,7 @@ class UserStatsWidget extends BaseWidget
 {
     protected function getStats(): array
     {
-        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenant = Filament::getTenant();
 
         if ($tenant) {
             $totalUsers = $tenant->users()->count();

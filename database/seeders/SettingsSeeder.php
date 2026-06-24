@@ -16,12 +16,12 @@ class SettingsSeeder extends Seeder
     {
         // ─── Global System Settings ──────────────────
         $systemDefaults = [
-            'app_name'        => 'JoralERP',
-            'app_logo'        => null,
-            'app_favicon'     => null,
-            'color_primary'   => '#f59e0b',
+            'app_name' => 'JoralERP',
+            'app_logo' => null,
+            'app_favicon' => null,
+            'color_primary' => '#f59e0b',
             'color_secondary' => '#6366f1',
-            'default_locale'  => 'es',
+            'default_locale' => 'es',
         ];
 
         foreach ($systemDefaults as $key => $value) {
@@ -36,11 +36,11 @@ class SettingsSeeder extends Seeder
         if ($peCompany) {
             $peSettings = [
                 // Branding
-                'company_logo'        => null,
-                'company_icon'        => null,
-                'primary_color'       => '#dc2626',  // Rojo 🇵🇪
-                'secondary_color'     => '#991b1b',
-                'locale'              => 'es',
+                'company_logo' => null,
+                'company_icon' => null,
+                'primary_color' => '#dc2626',  // Rojo 🇵🇪
+                'secondary_color' => '#991b1b',
+                'locale' => 'es',
                 // Operaciones
                 'business_hours' => [
                     ['day' => 'lunes',     'open' => '08:00', 'close' => '18:00', 'active' => true],
@@ -50,9 +50,9 @@ class SettingsSeeder extends Seeder
                     ['day' => 'viernes',   'open' => '08:00', 'close' => '18:00', 'active' => true],
                     ['day' => 'sábado',    'open' => '09:00', 'close' => '13:00', 'active' => true],
                 ],
-                'secondary_currency'  => 'USD',
-                'exchange_rate'       => 3.72,
-                'stock_alert_min'     => 10,
+                'secondary_currency' => 'USD',
+                'exchange_rate' => 3.72,
+                'stock_alert_min' => 10,
                 'stock_alert_enabled' => true,
             ];
 
@@ -69,11 +69,11 @@ class SettingsSeeder extends Seeder
         if ($clCompany) {
             $clSettings = [
                 // Branding
-                'company_logo'        => null,
-                'company_icon'        => null,
-                'primary_color'       => '#2563eb',  // Azul 🇨🇱
-                'secondary_color'     => '#1e40af',
-                'locale'              => 'es',
+                'company_logo' => null,
+                'company_icon' => null,
+                'primary_color' => '#2563eb',  // Azul 🇨🇱
+                'secondary_color' => '#1e40af',
+                'locale' => 'es',
                 // Operaciones
                 'business_hours' => [
                     ['day' => 'lunes',     'open' => '09:00', 'close' => '18:00', 'active' => true],
@@ -82,9 +82,9 @@ class SettingsSeeder extends Seeder
                     ['day' => 'jueves',    'open' => '09:00', 'close' => '18:00', 'active' => true],
                     ['day' => 'viernes',   'open' => '09:00', 'close' => '18:00', 'active' => true],
                 ],
-                'secondary_currency'  => 'USD',
-                'exchange_rate'       => 930.50,
-                'stock_alert_min'     => 5,
+                'secondary_currency' => 'USD',
+                'exchange_rate' => 930.50,
+                'stock_alert_min' => 5,
                 'stock_alert_enabled' => true,
             ];
 

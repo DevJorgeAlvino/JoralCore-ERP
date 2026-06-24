@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Company extends Model
 {
     use HasUlids, SoftDeletes;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
@@ -47,6 +48,11 @@ class Company extends Model
         return [
             'deleted_at' => 'datetime',
         ];
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 
     // ──────────────────────────────────────────────
@@ -111,7 +117,7 @@ class Company extends Model
                 }
 
                 if ($this->country === 'CL' && $this->dv !== null) {
-                    return $this->identity_document . '-' . $this->dv;
+                    return $this->identity_document.'-'.$this->dv;
                 }
 
                 return $this->identity_document;

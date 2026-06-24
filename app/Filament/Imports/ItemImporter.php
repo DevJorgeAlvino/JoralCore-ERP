@@ -2,10 +2,19 @@
 
 namespace App\Filament\Imports;
 
+use App\Models\Company;
 use App\Models\Item;
+use App\Models\UnitMeasure;
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
+use Filament\Notifications\Notification;
+use Illuminate\Database\QueryException;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Number;
 
 class ItemImporter extends Importer
@@ -20,7 +29,7 @@ class ItemImporter extends Importer
                 ->guess(['nombre', 'producto', 'articulo', 'name'])
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),
-            
+
             ImportColumn::make('sku')
                 ->label(__('items.infolist.fields.sku'))
                 ->guess(['sku', 'codigo', 'codigo sku'])
@@ -84,31 +93,31 @@ class ItemImporter extends Importer
     public static function getOptionsFormComponents(): array
     {
         return [
-            \Filament\Forms\Components\Select::make('company_id')
+            Select::make('company_id')
                 ->label(__('items.infolist.fields.company'))
-                ->options(\App\Models\Company::pluck('name', 'id'))
+                ->options(Company::pluck('name', 'id'))
                 ->required()
                 ->searchable()
                 // Solo se muestra en el panel de Administración
-                ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
+                ->visible(fn () => Filament::getCurrentPanel()?->getId() === 'admin'),
         ];
     }
 
     public function resolveRecord(): ?Item
     {
-        $item = new Item();
-        
+        $item = new Item;
+
         // Obtener el ID de la empresa a través del Formulario de Importación (Admin)
         // O a través del Tenant Activo (Company Panel)
         $companyId = $this->options['company_id'] ?? filament()->getTenant()?->id;
 
-        if (!$companyId) {
-            throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('No se ha podido asignar una Empresa (Tenant) a este ítem.');
+        if (! $companyId) {
+            throw new RowImportFailedException('No se ha podido asignar una Empresa (Tenant) a este ítem.');
         }
 
         // Forzar la actualización del company_id en la tabla imports si aún no lo tiene
-        if (!$this->import->company_id) {
-            \Illuminate\Support\Facades\DB::table('imports')
+        if (! $this->import->company_id) {
+            DB::table('imports')
                 ->where('id', $this->import->id)
                 ->update(['company_id' => $companyId]);
             $this->import->company_id = $companyId;
@@ -117,16 +126,16 @@ class ItemImporter extends Importer
         $item->company_id = $companyId;
 
         // Configuración por defecto si no vienen en el archivo
-        if (!isset($this->data['manage_stock'])) {
+        if (! isset($this->data['manage_stock'])) {
             $item->manage_stock = false;
         }
-        if (!isset($this->data['is_active'])) {
+        if (! isset($this->data['is_active'])) {
             $item->is_active = true;
         }
 
         // Resolver unit_measure_id desde el codigo de unidad
-        if (!empty($this->data['unit_measure_code'])) {
-            $unitMeasure = \App\Models\UnitMeasure::where('code', $this->data['unit_measure_code'])
+        if (! empty($this->data['unit_measure_code'])) {
+            $unitMeasure = UnitMeasure::where('code', $this->data['unit_measure_code'])
                 ->where('company_id', $companyId)
                 ->first();
 
@@ -143,22 +152,22 @@ class ItemImporter extends Importer
 
     public function saveRecord(): void
     {
-        
+
         try {
             parent::saveRecord();
-        } catch (\Illuminate\Database\QueryException $e) {
-            throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('Error de base de datos: ' . $e->errorInfo[2]);
+        } catch (QueryException $e) {
+            throw new RowImportFailedException('Error de base de datos: '.$e->errorInfo[2]);
         } catch (\Throwable $e) {
-            throw new \Filament\Actions\Imports\Exceptions\RowImportFailedException('Error interno: ' . $e->getMessage());
+            throw new RowImportFailedException('Error interno: '.$e->getMessage());
         }
     }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Se han importado ' . Number::format($import->successful_rows) . ' ' . str('fila')->plural($import->successful_rows) . ' de forma exitosa.';
+        $body = 'Se han importado '.Number::format($import->successful_rows).' '.str('fila')->plural($import->successful_rows).' de forma exitosa.';
 
         if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' Sin embargo, ' . Number::format($failedRowsCount) . ' ' . str('fila')->plural($failedRowsCount) . ' fallaron.';
+            $body .= ' Sin embargo, '.Number::format($failedRowsCount).' '.str('fila')->plural($failedRowsCount).' fallaron.';
         }
 
         return $body;
@@ -171,7 +180,7 @@ class ItemImporter extends Importer
     public function getJobMiddleware(): array
     {
         return [
-            (new \Illuminate\Queue\Middleware\WithoutOverlapping($this->import->company_id))->releaseAfter(60),
+            (new WithoutOverlapping($this->import->company_id))->releaseAfter(60),
         ];
     }
 
@@ -179,7 +188,7 @@ class ItemImporter extends Importer
      * Inyecta el company_id en la notificación de completado para que el filtro
      * por empresa funcione incluso cuando el job corre en background (sin contexto HTTP).
      */
-    public static function modifyCompletedNotification(\Filament\Notifications\Notification $notification, Import $import): \Filament\Notifications\Notification
+    public static function modifyCompletedNotification(Notification $notification, Import $import): Notification
     {
         // Pasamos el company_id a través de viewData para que el observer
         // DatabaseNotification::creating en AppServiceProvider lo capture y

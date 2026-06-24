@@ -2,19 +2,23 @@
 
 namespace App\Filament\Resources\Items\Schemas;
 
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Hidden;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Schema;
+use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Item;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 
@@ -25,7 +29,7 @@ class ItemForm
         return $schema
             ->components([
                 Grid::make(3)
-                ->columnSpanFull()
+                    ->columnSpanFull()
                     ->schema([
                         Group::make()
                             ->schema([
@@ -53,6 +57,7 @@ class ItemForm
                                                 ignoreRecord: true,
                                                 modifyRuleUsing: function (Unique $rule) {
                                                     $tenant = Filament::getTenant();
+
                                                     return $tenant ? $rule->where('company_id', $tenant->id) : $rule;
                                                 }
                                             ),
@@ -68,7 +73,7 @@ class ItemForm
                                             ->label('Descripción Detallada')
                                             ->placeholder('Características, especificaciones o detalles adicionales...')
                                             ->columnSpanFull()
-                                            ->rows(4)
+                                            ->rows(4),
                                     ])->columns(2),
 
                                 Section::make('Precios e Impuestos')
@@ -118,27 +123,27 @@ class ItemForm
                                             ->maxFiles(5)
                                             ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
                                             ->visibility('public')
-                                            ->directory(function (Get $get, ?\App\Models\Item $record) {
+                                            ->directory(function (Get $get, ?Item $record) {
                                                 $companyId = $get('company_id') ?? $record?->company_id ?? filament()->getTenant()?->id;
-                                                
+
                                                 if (empty($companyId)) {
                                                     return 'companies/temporary/items/tmp/images';
                                                 }
-                                                
+
                                                 if ($record && $record->id) {
                                                     return "companies/company_{$companyId}/items/{$record->id}/images";
                                                 }
-                                                
+
                                                 return "companies/company_{$companyId}/items/tmp/images";
                                             })
-                                            ->deleteUploadedFileUsing(function (string $file, Get $get, ?\App\Models\Item $record) {
+                                            ->deleteUploadedFileUsing(function (string $file, Get $get, ?Item $record) {
                                                 $companyId = $get('company_id') ?? $record?->company_id ?? filament()->getTenant()?->id;
-                                                
+
                                                 $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
-                                                \Illuminate\Support\Facades\Storage::disk($disk)->delete($file);
+                                                Storage::disk($disk)->delete($file);
                                             })
-                                            ->columnSpanFull()
-                                    ])
+                                            ->columnSpanFull(),
+                                    ]),
                             ])
                             ->columnSpan(['lg' => 2]),
 
@@ -154,7 +159,40 @@ class ItemForm
                                             ->native(false)
                                             ->required()
                                             ->live()
-                                            ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
+                                            ->visible(fn () => Filament::getCurrentPanel()?->getId() === 'admin'),
+
+                                        Select::make('category_id')
+                                            ->label('Categoría')
+                                            ->options(function (Get $get) {
+                                                $companyId = $get('company_id') ?? filament()->getTenant()?->id;
+                                                if (! $companyId) {
+                                                    return [];
+                                                }
+
+                                                return Category::where('company_id', $companyId)
+                                                    ->where('is_active', true)
+                                                    ->get()
+                                                    ->mapWithKeys(fn ($cat) => [$cat->id => $cat->full_name]);
+                                            })
+                                            ->searchable()
+                                            ->native(false)
+                                            ->placeholder('Sin categoría'),
+
+                                        Select::make('brand_id')
+                                            ->label('Marca')
+                                            ->options(function (Get $get) {
+                                                $companyId = $get('company_id') ?? filament()->getTenant()?->id;
+                                                if (! $companyId) {
+                                                    return [];
+                                                }
+
+                                                return Brand::where('company_id', $companyId)
+                                                    ->where('is_active', true)
+                                                    ->pluck('name', 'id');
+                                            })
+                                            ->searchable()
+                                            ->native(false)
+                                            ->placeholder('Sin marca'),
 
                                         Select::make('type')
                                             ->label('Tipo de Artículo')

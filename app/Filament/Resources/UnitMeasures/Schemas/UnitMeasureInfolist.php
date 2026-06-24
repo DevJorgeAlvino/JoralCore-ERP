@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\UnitMeasures\Schemas;
 
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class UnitMeasureInfolist

@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Items;
 
-use App\Filament\Resources\Items\Pages\CreateItem;
 use App\Filament\Resources\Items\Pages\EditItem;
 use App\Filament\Resources\Items\Pages\ListItems;
 use App\Filament\Resources\Items\Pages\ViewItem;
+use App\Filament\Resources\Items\RelationManagers\PresentationsRelationManager;
 use App\Filament\Resources\Items\Schemas\ItemForm;
 use App\Filament\Resources\Items\Schemas\ItemInfolist;
 use App\Filament\Resources\Items\Tables\ItemsTable;
@@ -27,6 +27,10 @@ class ItemResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static bool $isScopedToTenant = true;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Catálogo';
+
+    protected static ?int $navigationSort = 3;
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -61,7 +65,7 @@ class ItemResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            PresentationsRelationManager::class,
         ];
     }
 
@@ -69,7 +73,6 @@ class ItemResource extends Resource
     {
         return [
             'index' => ListItems::route('/'),
-            // 'create' => CreateItem::route('/create'),
             'view' => ViewItem::route('/{record}'),
             'edit' => EditItem::route('/{record}/edit'),
         ];

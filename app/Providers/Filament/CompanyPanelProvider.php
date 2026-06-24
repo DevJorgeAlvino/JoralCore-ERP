@@ -2,12 +2,21 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Facades\Filament;
 use App\Filament\Pages\Tenancy\EditCompanyProfile;
+use App\Filament\Pages\Tenancy\RegisterCompany;
+use App\Filament\Resources\Brands\BrandResource;
+use App\Filament\Resources\Categories\CategoryResource;
+use App\Filament\Resources\Items\ItemResource;
+use App\Filament\Resources\Roles\RoleResource;
+use App\Filament\Resources\UnitMeasures\UnitMeasureResource;
+use App\Filament\Resources\Users\UserResource;
 use App\Http\Middleware\ApplyTenantBranding;
+use App\Http\Middleware\CheckCompanyAccess;
 use App\Http\Middleware\SetUserCompanyTenant;
 use App\Models\Company;
 use App\Services\CompanySettingService;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Facades\Filament;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -31,12 +40,12 @@ class CompanyPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
 
-         return $panel
+        return $panel
             ->id('company')
             ->path('company')
             ->login()
             ->databaseNotifications()
-            // ─── Branding dinámico por tenant ────────────
+           // ─── Branding dinámico por tenant ────────────
             ->brandName(function () {
                 try {
                     return Filament::getTenant()->name ?? 'JoralCore ERP';
@@ -44,7 +53,6 @@ class CompanyPanelProvider extends PanelProvider
                     return 'JoralCore ERP';
                 }
             })
-
             ->brandLogo(function () {
 
                 try {
@@ -54,7 +62,7 @@ class CompanyPanelProvider extends PanelProvider
 
                         $logoPath = CompanySettingService::get($tenant->id, 'company_logo');
 
-                        if (!$logoPath) {
+                        if (! $logoPath) {
                             return null;
                         }
 
@@ -67,40 +75,40 @@ class CompanyPanelProvider extends PanelProvider
                 } catch (\Throwable) {
                     return null;
                 }
-               
-                
-            })
 
+            })
             ->favicon(function () {
 
                 try {
                     $tenant = Filament::getTenant();
 
                     if ($tenant) {
-                        
+
                         $faviconPath = CompanySettingService::get($tenant->id, 'company_icon');
-                        
-                        if (!$faviconPath) {
+
+                        if (! $faviconPath) {
                             return null;
+                        }
+
+                        $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
+
+                        return Storage::disk($disk)->url($faviconPath);
+
                     }
 
-                    $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
-
-                    return Storage::disk($disk)->url($faviconPath);
-
-                }
-                    
                 } catch (\Throwable) {
                     return null;
                 }
-                
+
             })
             ->discoverResources(in: app_path('Filament/Company/Resources'), for: 'App\Filament\Company\Resources')
             ->resources([
-                \App\Filament\Resources\Roles\RoleResource::class,
-                \App\Filament\Resources\UnitMeasures\UnitMeasureResource::class,
-                \App\Filament\Resources\Users\UserResource::class,
-                \App\Filament\Resources\Items\ItemResource::class,
+                RoleResource::class,
+                UnitMeasureResource::class,
+                UserResource::class,
+                CategoryResource::class,
+                BrandResource::class,
+                ItemResource::class,
             ])
             ->discoverPages(in: app_path('Filament/Company/Pages'), for: 'App\Filament\Company\Pages')
             ->pages([
@@ -124,24 +132,22 @@ class CompanyPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\CheckCompanyAccess::class,
+                CheckCompanyAccess::class,
             ])
-            // Shield se gestiona solo desde el panel Admin (centralizado)
+           // Shield se gestiona solo desde el panel Admin (centralizado)
             ->plugins([
-                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make(),
             ])
             ->tenant(Company::class)
-            ->tenantRegistration(\App\Filament\Pages\Tenancy\RegisterCompany::class)
+            ->tenantRegistration(RegisterCompany::class)
             ->tenantProfile(EditCompanyProfile::class)
             ->tenantMiddleware([
                 SetUserCompanyTenant::class,
                 ApplyTenantBranding::class,
             ], isPersistent: true)
             ->navigationGroups([
-                 NavigationGroup::make()
-                 ->label('Sistema')
-                 ->collapsed()
+                NavigationGroup::make()->label('Catálogo'),
+                NavigationGroup::make()->label('Sistema')->collapsed(),
             ]);
     }
-
 }

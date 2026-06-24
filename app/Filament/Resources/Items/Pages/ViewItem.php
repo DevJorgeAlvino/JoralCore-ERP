@@ -16,4 +16,19 @@ class ViewItem extends ViewRecord
             EditAction::make(),
         ];
     }
+
+    public function hasCombinedRelationManagerTabsWithContent(): bool
+    {
+        return true;
+    }
+
+    public function getContentTabLabel(): ?string
+    {
+        return 'Información General';
+    }
+
+    public function getContentTabIcon(): ?string
+    {
+        return 'heroicon-o-information-circle';
+    }
 }

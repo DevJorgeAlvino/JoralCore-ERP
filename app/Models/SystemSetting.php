@@ -10,6 +10,7 @@ class SystemSetting extends Model
     use HasUlids;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [

@@ -5,15 +5,12 @@ namespace App\Filament\Resources\Users\RelationManagers;
 use App\Filament\Resources\Companies\CompanyResource;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\DetachBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-
 use Illuminate\Database\Eloquent\Model;
 
 class CompaniesRelationManager extends RelationManager
@@ -21,7 +18,7 @@ class CompaniesRelationManager extends RelationManager
     protected static string $relationship = 'companies';
 
     protected static ?string $relatedResource = CompanyResource::class;
-    
+
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('companies.relations.assigned');
@@ -58,7 +55,7 @@ class CompaniesRelationManager extends RelationManager
             ])
             ->recordActions([
                 ViewAction::make(),
-                DetachAction::make()
+                DetachAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

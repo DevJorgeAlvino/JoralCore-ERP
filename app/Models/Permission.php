@@ -8,11 +8,10 @@ use Spatie\Permission\Models\Permission as SpatiePermission;
 
 class Permission extends SpatiePermission
 {
-    use HasUlids;
     use HasFactory;
+    use HasUlids;
 
     protected $keyType = 'string';
-    public $incrementing = false;
 
-    
+    public $incrementing = false;
 }

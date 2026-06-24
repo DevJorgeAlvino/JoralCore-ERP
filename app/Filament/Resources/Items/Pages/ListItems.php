@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\Items\Pages;
 
+use App\Filament\Imports\ItemImporter;
 use App\Filament\Resources\Items\ItemResource;
 use Filament\Actions\CreateAction;
+use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class ListItems extends ListRecords
@@ -15,10 +18,10 @@ class ListItems extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\ImportAction::make()
-                ->importer(\App\Filament\Imports\ItemImporter::class)
+            ImportAction::make()
+                ->importer(ItemImporter::class)
                 ->label(__('items.actions.import'))
-                ->modalDescription(new \Illuminate\Support\HtmlString(__('items.actions.import_desc')))
+                ->modalDescription(new HtmlString(__('items.actions.import_desc')))
                 ->icon('heroicon-o-arrow-up-tray')
                 ->maxRows(10000)
                 ->color('secondary')
@@ -29,12 +32,12 @@ class ListItems extends ListRecords
                 ->modalWidth('7xl')
                 ->extraModalWindowAttributes(['novalidate' => true])
                 ->after(function ($record) {
-                    
+
                     $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
                     $storage = Storage::disk($disk);
 
-                    $companyId = $record->company_id; 
-                    $itemId = $record->id; 
+                    $companyId = $record->company_id;
+                    $itemId = $record->id;
 
                     if ($record->images && is_array($record->images)) {
                         $newImages = [];
@@ -43,15 +46,15 @@ class ListItems extends ListRecords
                             // 1. Validamos si la imagen está atrapada en la carpeta temporal
                             if (Str::contains($imagePath, '/tmp/images/')) {
                                 $filename = basename($imagePath);
-                                
+
                                 // 2. Armamos la ruta definitiva con tu prefijo "company_"
                                 $newPath = "companies/company_{$companyId}/items/{$itemId}/images/{$filename}";
-                                
+
                                 // 3. Ejecutamos la mudanza real en Cloudflare R2 o Local
                                 if ($storage->exists($imagePath)) {
                                     $storage->move($imagePath, $newPath);
                                 }
-                                
+
                                 $newImages[] = $newPath;
                             } else {
                                 $newImages[] = $imagePath;
@@ -60,7 +63,7 @@ class ListItems extends ListRecords
 
                         // 4. Actualizamos de forma silenciosa la columna JSON en DBngin
                         $record->updateQuietly([
-                            'images' => $newImages
+                            'images' => $newImages,
                         ]);
                     }
                 }),

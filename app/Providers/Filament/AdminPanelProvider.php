@@ -12,6 +12,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -23,9 +24,8 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Filament\Navigation\NavigationGroup;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -73,16 +73,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                SetUserSuperAdmin::class
+                SetUserSuperAdmin::class,
             ])
             ->navigationGroups([
-                 NavigationGroup::make()
-                 ->label('Sistema')
-                 ->collapsed()
+                NavigationGroup::make()
+                    ->label('Sistema')
+                    ->collapsed(),
             ]);
-            // ->tenant(Company::class)
-            // ->tenantRegistration(RegisterCompany::class)
-            // ->tenantProfile(EditCompanyProfile::class);
+        // ->tenant(Company::class)
+        // ->tenantRegistration(RegisterCompany::class)
+        // ->tenantProfile(EditCompanyProfile::class);
     }
 
     // ─── Branding global desde system_settings ───────
@@ -102,10 +102,10 @@ class AdminPanelProvider extends PanelProvider
         try {
             $logoPath = SystemSettingService::get('app_logo');
 
-            if (!$logoPath) {
+            if (! $logoPath) {
                 return null;
             }
-    
+
             $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
 
             return Storage::disk($disk)->url($logoPath);
@@ -127,7 +127,7 @@ class AdminPanelProvider extends PanelProvider
             $disk = env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public';
 
             return Storage::disk($disk)->url($faviconPath);
-            
+
         } catch (\Throwable) {
             return null;
         }

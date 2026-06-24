@@ -2,16 +2,16 @@
 
 namespace App\Filament\Resources\Users;
 
-use App\Filament\Resources\Users\RelationManagers\RolesRelationManager;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\RelationManagers\CompaniesRelationManager;
+use App\Filament\Resources\Users\RelationManagers\RolesRelationManager;
 use App\Filament\Resources\Users\Schemas\UserForm;
 use App\Filament\Resources\Users\Tables\UsersTable;
 use App\Models\User;
 use BackedEnum;
-use Filament\Resources\RelationManagers\RelationGroup;
+use Filament\Facades\Filament;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -28,7 +28,7 @@ class UserResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static bool $isScopedToTenant = true;
-    
+
     protected static ?string $tenantOwnershipRelationshipName = 'companies';
 
     public static function getGloballySearchableAttributes(): array
@@ -62,7 +62,7 @@ class UserResource extends Resource
             RolesRelationManager::class,
         ];
 
-        if (\Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin') {
+        if (Filament::getCurrentPanel()?->getId() === 'admin') {
             array_unshift($relations, CompaniesRelationManager::class);
         }
 
@@ -80,7 +80,7 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $tenant = \Filament\Facades\Filament::getTenant();
+        $tenant = Filament::getTenant();
 
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([

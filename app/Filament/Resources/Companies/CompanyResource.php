@@ -57,7 +57,7 @@ class CompanyResource extends Resource
     {
         return [
             RolesRelationManager::class,
-            UsersRelationManager::class
+            UsersRelationManager::class,
         ];
     }
 

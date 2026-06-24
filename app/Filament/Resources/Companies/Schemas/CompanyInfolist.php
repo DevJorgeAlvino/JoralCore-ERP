@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Companies\Schemas;
 
 use App\Models\Company;
+use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -17,68 +18,68 @@ class CompanyInfolist
             ->components([
                 Group::make()->schema([
                     // ─── Información Comercial ───────────────────
-                        Section::make(__('companies.sections.commercial'))
-                            ->icon('heroicon-o-building-office-2')
-                            ->schema([
-                                Grid::make(2)->schema([
-                                    TextEntry::make('name')
-                                        ->label(__('companies.fields.name'))
-                                        ->icon('heroicon-m-building-office')
-                                        ->weight('bold'),
+                    Section::make(__('companies.sections.commercial'))
+                        ->icon('heroicon-o-building-office-2')
+                        ->schema([
+                            Grid::make(2)->schema([
+                                TextEntry::make('name')
+                                    ->label(__('companies.fields.name'))
+                                    ->icon('heroicon-m-building-office')
+                                    ->weight('bold'),
 
-                                    TextEntry::make('slug')
-                                        ->label(__('companies.fields.slug'))
-                                        ->badge()
-                                        ->icon('heroicon-m-link')
-                                        ->color('gray'),
-
-                                    \Filament\Infolists\Components\IconEntry::make('is_active')
-                                        ->label('Cuenta Activa')
-                                        ->boolean()
-                                        ->columnSpanFull(),
-
-                                    TextEntry::make('description')
-                                        ->label(__('companies.fields.description'))
-                                        ->placeholder('Sin descripción.')
-                                        ->columnSpanFull(),
-                                ]),
-                            ]),
-                    ])->columnSpan(['lg' => 2]),
-
-                    Group::make()->schema([
-                        // ─── Localización y Configuración Regional ───
-                        Section::make(__('companies.sections.localization'))
-                            ->icon('heroicon-o-globe-americas')
-                            ->schema([
-                                TextEntry::make('country')
-                                    ->label(__('companies.fields.country'))
+                                TextEntry::make('slug')
+                                    ->label(__('companies.fields.slug'))
                                     ->badge()
-                                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                                        'PE' => '🇵🇪 Perú',
-                                        'CL' => '🇨🇱 Chile',
-                                        default => $state,
-                                    })
-                                    ->color(fn (string $state): string => match ($state) {
-                                        'PE' => 'danger',
-                                        'CL' => 'info',
-                                        default => 'gray',
-                                    }),
+                                    ->icon('heroicon-m-link')
+                                    ->color('gray'),
 
-                                TextEntry::make('currency')
-                                    ->label(__('companies.fields.currency'))
-                                    ->badge()
-                                    ->icon('heroicon-m-currency-dollar')
-                                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                                        'PEN' => 'PEN — Sol (S/)',
-                                        'CLP' => 'CLP — Peso ($)',
-                                        default => $state,
-                                    }),
+                                IconEntry::make('is_active')
+                                    ->label('Cuenta Activa')
+                                    ->boolean()
+                                    ->columnSpanFull(),
 
-                                TextEntry::make('timezone')
-                                    ->label(__('companies.fields.timezone'))
-                                    ->icon('heroicon-o-clock'),
+                                TextEntry::make('description')
+                                    ->label(__('companies.fields.description'))
+                                    ->placeholder('Sin descripción.')
+                                    ->columnSpanFull(),
                             ]),
-                    ])->columnSpan(['lg' => 1]),
+                        ]),
+                ])->columnSpan(['lg' => 2]),
+
+                Group::make()->schema([
+                    // ─── Localización y Configuración Regional ───
+                    Section::make(__('companies.sections.localization'))
+                        ->icon('heroicon-o-globe-americas')
+                        ->schema([
+                            TextEntry::make('country')
+                                ->label(__('companies.fields.country'))
+                                ->badge()
+                                ->formatStateUsing(fn (string $state): string => match ($state) {
+                                    'PE' => '🇵🇪 Perú',
+                                    'CL' => '🇨🇱 Chile',
+                                    default => $state,
+                                })
+                                ->color(fn (string $state): string => match ($state) {
+                                    'PE' => 'danger',
+                                    'CL' => 'info',
+                                    default => 'gray',
+                                }),
+
+                            TextEntry::make('currency')
+                                ->label(__('companies.fields.currency'))
+                                ->badge()
+                                ->icon('heroicon-m-currency-dollar')
+                                ->formatStateUsing(fn (string $state): string => match ($state) {
+                                    'PEN' => 'PEN — Sol (S/)',
+                                    'CLP' => 'CLP — Peso ($)',
+                                    default => $state,
+                                }),
+
+                            TextEntry::make('timezone')
+                                ->label(__('companies.fields.timezone'))
+                                ->icon('heroicon-o-clock'),
+                        ]),
+                ])->columnSpan(['lg' => 1]),
 
                 // ─── Información Legal y Tributaria ──────────
                 Section::make(__('companies.sections.legal'))
@@ -116,7 +117,7 @@ class CompanyInfolist
                                 ->icon('heroicon-m-document-currency-dollar')
                                 ->placeholder('No registrado.'),
 
-                            \Filament\Infolists\Components\IconEntry::make('is_retention_agent')
+                            IconEntry::make('is_retention_agent')
                                 ->label('Agente de Retención')
                                 ->boolean(),
 

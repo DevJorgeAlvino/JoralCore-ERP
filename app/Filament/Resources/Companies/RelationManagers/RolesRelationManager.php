@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Companies\RelationManagers;
 
 use App\Filament\Resources\Roles\RoleResource;
-use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
@@ -21,7 +20,7 @@ class RolesRelationManager extends RelationManager
     protected static string $relationship = 'roles';
 
     protected static ?string $relatedResource = RoleResource::class;
-    
+
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('companies.relations.roles');

@@ -21,7 +21,7 @@ class CompaniesTable
             ->columns([
                 ImageColumn::make('logo')
                     ->label('')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=09090b')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name).'&color=FFFFFF&background=09090b')
                     ->circular()
                     ->size(36)
                     ->grow(false),
@@ -78,13 +78,13 @@ class CompaniesTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 TextColumn::make('updated_at')
                     ->label(__('companies.fields.updated_at'))
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                
+
                 TextColumn::make('deleted_at')
                     ->label(__('companies.fields.deleted_at'))
                     ->dateTime()

@@ -11,6 +11,7 @@ class CompanySetting extends Model
     use HasUlids;
 
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [

@@ -24,7 +24,7 @@ class CompanySettingService
     public static function get(string $companyId, string $key, mixed $default = null): mixed
     {
         return Cache::remember(
-            self::CACHE_PREFIX . $companyId . ':' . $key,
+            self::CACHE_PREFIX.$companyId.':'.$key,
             self::CACHE_TTL,
             fn () => CompanySetting::where('company_id', $companyId)
                 ->where('key', $key)
@@ -42,8 +42,8 @@ class CompanySettingService
             ['value' => $value],
         );
 
-        Cache::forget(self::CACHE_PREFIX . $companyId . ':' . $key);
-        Cache::forget(self::CACHE_PREFIX . $companyId . ':all');
+        Cache::forget(self::CACHE_PREFIX.$companyId.':'.$key);
+        Cache::forget(self::CACHE_PREFIX.$companyId.':all');
     }
 
     /**
@@ -53,7 +53,7 @@ class CompanySettingService
     public static function allFor(string $companyId): array
     {
         return Cache::remember(
-            self::CACHE_PREFIX . $companyId . ':all',
+            self::CACHE_PREFIX.$companyId.':all',
             self::CACHE_TTL,
             fn () => CompanySetting::where('company_id', $companyId)
                 ->get()
@@ -71,7 +71,7 @@ class CompanySettingService
             ->where('key', $key)
             ->delete();
 
-        Cache::forget(self::CACHE_PREFIX . $companyId . ':' . $key);
-        Cache::forget(self::CACHE_PREFIX . $companyId . ':all');
+        Cache::forget(self::CACHE_PREFIX.$companyId.':'.$key);
+        Cache::forget(self::CACHE_PREFIX.$companyId.':all');
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Company;
+use App\Models\UnitMeasure;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class UnitMeasureSeeder extends Seeder
 {
@@ -21,16 +22,32 @@ class UnitMeasureSeeder extends Seeder
             ['code' => 'MT',  'name' => 'Metros', 'country' => null],
         ];
 
-        foreach ($measures as $measure) {
-            DB::table('unit_measures')->updateOrInsert(
-                ['code' => $measure['code']],
-                [
-                    'name' => $measure['name'], 
-                    'country' => $measure['country'], 
-                    'updated_at' => now(), 
-                    'created_at' => now()
-                ]
-            );
+        $companies = Company::all();
+
+        if ($companies->isEmpty()) {
+            $this->command->warn('No se encontraron empresas para asociar las unidades de medida.');
+
+            return;
+        }
+
+        foreach ($companies as $company) {
+            foreach ($measures as $measure) {
+                // Omitir medidas de otros países
+                if ($measure['country'] !== null && $measure['country'] !== $company->country) {
+                    continue;
+                }
+
+                UnitMeasure::updateOrCreate(
+                    [
+                        'company_id' => $company->id,
+                        'code' => $measure['code'],
+                    ],
+                    [
+                        'name' => $measure['name'],
+                        'country' => $measure['country'],
+                    ]
+                );
+            }
         }
     }
 }

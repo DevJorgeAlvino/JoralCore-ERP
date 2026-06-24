@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Companies\RelationManagers;
 
 use App\Filament\Resources\Users\UserResource;
+use App\Models\User;
 use Filament\Actions\AttachAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -25,7 +26,7 @@ class UsersRelationManager extends RelationManager
     protected static string $relationship = 'users';
 
     protected static ?string $relatedResource = UserResource::class;
-    
+
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
         return __('companies.relations.assigned_users');
@@ -37,7 +38,7 @@ class UsersRelationManager extends RelationManager
             ->columns([
                 ImageColumn::make('avatar')
                     ->label('')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=09090b')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name).'&color=FFFFFF&background=09090b')
                     ->circular()
                     ->size(36)
                     ->grow(false),
@@ -74,7 +75,7 @@ class UsersRelationManager extends RelationManager
                         Select::make('role_id')
                             ->label(__('roles.actions.available_role'))
                             ->relationship(
-                                name: 'rolesAll', 
+                                name: 'rolesAll',
                                 titleAttribute: 'name',
                                 modifyQueryUsing: function (Builder $query, $livewire) {
                                     return $livewire->getOwnerRecord()->roles();
@@ -90,7 +91,7 @@ class UsersRelationManager extends RelationManager
                         $company = $livewire->getOwnerRecord();
                         // El recordId viene en la data por defecto del select de Attach
                         $userId = $data['recordId'] ?? null;
-                        
+
                         // Si v3 agrupa los ids en caso de multiple
                         if (is_array($userId)) {
                             $userIds = $userId;
@@ -98,10 +99,10 @@ class UsersRelationManager extends RelationManager
                             $userIds = [$userId];
                         }
 
-                        if (!empty($userIds) && !empty($data['role_id'])) {
+                        if (! empty($userIds) && ! empty($data['role_id'])) {
                             setPermissionsTeamId($company->id);
                             foreach ($userIds as $uid) {
-                                $user = \App\Models\User::find($uid);
+                                $user = User::find($uid);
                                 if ($user) {
                                     $user->syncRoles($data['role_id']);
                                 }
@@ -144,7 +145,7 @@ class UsersRelationManager extends RelationManager
                                 Select::make('role_id')
                                     ->label(__('roles.actions.available_role'))
                                     ->relationship(
-                                        name: 'rolesAll', 
+                                        name: 'rolesAll',
                                         titleAttribute: 'name',
                                         modifyQueryUsing: function (Builder $query, $livewire) {
                                             return $livewire->getOwnerRecord()->roles();
@@ -163,7 +164,7 @@ class UsersRelationManager extends RelationManager
                                     ->required()
                                     ->columnSpanFull()
                                     ->prefixIcon('heroicon-m-identification'),
-                            ])
+                            ]),
                     ]),
             ])
             ->recordActions([

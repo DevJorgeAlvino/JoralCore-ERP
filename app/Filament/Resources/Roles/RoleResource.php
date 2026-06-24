@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Roles;
 
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use App\Filament\Resources\Roles\Pages\CreateRole;
 use App\Filament\Resources\Roles\Pages\EditRole;
 use App\Filament\Resources\Roles\Pages\ListRoles;
 use App\Filament\Resources\Roles\Pages\ViewRole;
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
 use BezhanSalleh\PluginEssentials\Concerns\Resource as Essentials;
@@ -26,6 +27,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 use Override;
@@ -43,14 +45,14 @@ class RoleResource extends Resource
 
     public static function getPageOptions(): array
     {
-        $options = collect(\BezhanSalleh\FilamentShield\Facades\FilamentShield::getPages())
+        $options = collect(FilamentShield::getPages())
             ->flatMap(fn ($page) => $page['permissions'])
             ->toArray();
 
         // En el panel company, ocultar GlobalSettingsPage
         if (Filament::getCurrentPanel()?->getId() === 'company') {
             foreach ($options as $key => $value) {
-                if (\Illuminate\Support\Str::contains($key, 'GlobalSettingsPage')) {
+                if (Str::contains($key, 'GlobalSettingsPage')) {
                     unset($options[$key]);
                 }
             }
@@ -61,25 +63,26 @@ class RoleResource extends Resource
 
     public static function getResourceEntitiesSchema(): ?array
     {
-        return collect(\BezhanSalleh\FilamentShield\Facades\FilamentShield::getResources())
+        return collect(FilamentShield::getResources())
             ->filter(function (array $entity) {
                 // En el panel company, ocultar CompanyResource
                 if (Filament::getCurrentPanel()?->getId() === 'company') {
-                    if (\Illuminate\Support\Str::contains($entity['resourceFqcn'], 'CompanyResource')) {
+                    if (Str::contains($entity['resourceFqcn'], 'CompanyResource')) {
                         return false;
                     }
                 }
+
                 return true;
             })
-            ->map(function (array $entity): \Filament\Schemas\Components\Section {
+            ->map(function (array $entity): Section {
                 $sectionLabel = strval(
                     static::shield()->hasLocalizedPermissionLabels()
-                    ? \BezhanSalleh\FilamentShield\Facades\FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
+                    ? FilamentShield::getLocalizedResourceLabel($entity['resourceFqcn'])
                     : $entity['model']
                 );
 
-                return \Filament\Schemas\Components\Section::make($sectionLabel)
-                    ->description(fn (): \Illuminate\Support\HtmlString => new \Illuminate\Support\HtmlString('<span style="word-break: break-word;">' . Utils::showModelPath($entity['modelFqcn']) . '</span>'))
+                return Section::make($sectionLabel)
+                    ->description(fn (): HtmlString => new HtmlString('<span style="word-break: break-word;">'.Utils::showModelPath($entity['modelFqcn']).'</span>'))
                     ->compact()
                     ->schema([
                         static::getCheckBoxListComponentForResource($entity),

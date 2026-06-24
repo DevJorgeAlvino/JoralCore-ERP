@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\Items\Schemas;
 
 use App\Models\Item;
+use Filament\Facades\Filament;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
@@ -74,15 +75,15 @@ class ItemInfolist
                                             ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
                                             ->limit(10)
                                             ->columnSpanFull()
-                                            ->visible(fn (Item $record) => !empty($record->images)),
-                                            
+                                            ->visible(fn (Item $record) => ! empty($record->images)),
+
                                         TextEntry::make('no_images_placeholder')
                                             ->hiddenLabel()
                                             ->default(__('items.infolist.fields.no_images'))
                                             ->color('gray')
                                             ->icon('heroicon-m-exclamation-circle')
                                             ->visible(fn (Item $record) => empty($record->images)),
-                                    ])
+                                    ]),
                             ])
                             ->columnSpan(['lg' => 2]),
 
@@ -94,7 +95,7 @@ class ItemInfolist
                                     ->schema([
                                         TextEntry::make('company.name')
                                             ->label(__('items.infolist.fields.company'))
-                                            ->visible(fn () => \Filament\Facades\Filament::getTenant() === null),
+                                            ->visible(fn () => Filament::getTenant() === null),
                                         TextEntry::make('type')
                                             ->label(__('items.infolist.fields.item_type'))
                                             ->badge()

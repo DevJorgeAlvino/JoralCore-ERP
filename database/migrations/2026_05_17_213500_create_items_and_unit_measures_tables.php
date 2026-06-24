@@ -21,7 +21,7 @@ return new class extends Migration
 
         Schema::create('items', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUuid('company_id')->constrained('companies')->cascadeOnDelete();
+            $table->foreignUlid('company_id')->constrained('companies')->cascadeOnDelete();
             $table->string('sku')->index();
             $table->string('barcode')->nullable()->index();
             $table->string('name');

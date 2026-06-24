@@ -7,10 +7,11 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Facades\Filament;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ImageColumn;
 
 class UsersTable
 {
@@ -20,7 +21,7 @@ class UsersTable
             ->columns([
                 ImageColumn::make('avatar')
                     ->label('')
-                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name) . '&color=FFFFFF&background=09090b')
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name).'&color=FFFFFF&background=09090b')
                     ->circular()
                     ->size(36)
                     ->grow(false),
@@ -41,10 +42,10 @@ class UsersTable
                     ->searchable()
                     ->sortable()
                     ->toggleable()
-                    ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin'),
+                    ->visible(fn () => Filament::getCurrentPanel()?->getId() === 'admin'),
 
                 TextColumn::make('rolesAll.name')
-                    ->label(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin' ? __('users.table.global_roles') : __('users.table.roles'))
+                    ->label(fn () => Filament::getCurrentPanel()?->getId() === 'admin' ? __('users.table.global_roles') : __('users.table.roles'))
                     ->badge()
                     ->color('primary')
                     ->separator(',')

@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\UnitMeasures\Schemas;
 
+use Filament\Facades\Filament;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -18,12 +20,12 @@ class UnitMeasureForm
                     ->icon('heroicon-o-information-circle')
                     ->schema([
                         Grid::make(2)->schema([
-                            \Filament\Forms\Components\Select::make('company_id')
+                            Select::make('company_id')
                                 ->label(__('unit_measures.fields.company'))
                                 ->relationship('company', 'name')
                                 ->searchable()
                                 ->required()
-                                ->visible(fn () => \Filament\Facades\Filament::getCurrentPanel()?->getId() === 'admin')
+                                ->visible(fn () => Filament::getCurrentPanel()?->getId() === 'admin')
                                 ->columnSpanFull(),
 
                             TextInput::make('code')

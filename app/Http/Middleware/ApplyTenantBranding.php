@@ -5,12 +5,10 @@ namespace App\Http\Middleware;
 use App\Services\CompanySettingService;
 use Closure;
 use Filament\Facades\Filament;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\Response;
 use Filament\Support\Colors\Color;
-use Filament\Support\Facades\FilamentColor; // ¡Esta es la clave!
-use Illuminate\Support\Arr;
+use Filament\Support\Facades\FilamentColor;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response; // ¡Esta es la clave!
 
 class ApplyTenantBranding
 {

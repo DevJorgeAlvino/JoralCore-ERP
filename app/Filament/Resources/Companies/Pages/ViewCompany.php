@@ -17,7 +17,7 @@ class ViewCompany extends ViewRecord
         ];
     }
 
-     public function hasCombinedRelationManagerTabsWithContent(): bool // Para que las relaciones sea en tabs
+    public function hasCombinedRelationManagerTabsWithContent(): bool // Para que las relaciones sea en tabs
     {
         return true; // <--- ¡Esto es todo!
     }

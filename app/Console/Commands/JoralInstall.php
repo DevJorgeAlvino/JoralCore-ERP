@@ -22,11 +22,12 @@ class JoralInstall extends Command
      */
     public function handle()
     {
-        $this->info("🚀 Iniciando instalación de JoralCore System...");
+        $this->info('🚀 Iniciando instalación de JoralCore System...');
 
         // 1. Advertencia de seguridad (Porque migrate:fresh borra todo)
-        if (!$this->option('force') && !$this->confirm('⚠️  ADVERTENCIA: Esto borrará TODA la base de datos. ¿Deseas continuar?')) {
+        if (! $this->option('force') && ! $this->confirm('⚠️  ADVERTENCIA: Esto borrará TODA la base de datos. ¿Deseas continuar?')) {
             $this->warn('Cancelado por el usuario.');
+
             return;
         }
 
@@ -35,7 +36,7 @@ class JoralInstall extends Command
         $bar->start();
 
         // PASO 1: Generar Key (si no existe)
-        if (!env('APP_KEY')) {
+        if (! env('APP_KEY')) {
             $this->callSilent('key:generate');
         }
         $bar->advance();
@@ -75,7 +76,7 @@ class JoralInstall extends Command
 
         $this->newLine(2);
         $this->info('✅ ¡JoralCore instalado correctamente!');
-        $this->info('👤 Usuario: core@core.com');
+        $this->info('👤 Usuario: core@core.dev');
         $this->info('🔑 Password: mimomimaximen30');
         $this->info('-------------------------------------------');
         $this->comment('Listo para que ingreses al sistema');

@@ -15,5 +15,5 @@ return [
         'select_role' => 'Select a role',
         'select_company_first' => 'Select the company first',
         'assigned_success' => 'Role assigned successfully',
-    ]
+    ],
 ];

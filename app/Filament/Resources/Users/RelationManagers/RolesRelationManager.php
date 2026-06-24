@@ -2,32 +2,27 @@
 
 namespace App\Filament\Resources\Users\RelationManagers;
 
-use App\Filament\Resources\Companies\Tables\CompaniesTable;
 use App\Filament\Resources\Roles\RoleResource;
-use App\Models\Company;
 use App\Models\Role;
 use Filament\Actions\Action;
-use Filament\Actions\AttachAction;
-use Filament\Actions\BulkAction;
-use Filament\Actions\CreateAction;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\DetachAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Schemas\Components\Grid;
+use Filament\Notifications\Notification;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get as UtilitiesGet;
 use Filament\Schemas\Components\Utilities\Set as UtilitiesSet;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class RolesRelationManager extends RelationManager
@@ -55,7 +50,7 @@ class RolesRelationManager extends RelationManager
                     ->icon('heroicon-m-identification')
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('company.name')
                     ->label(__('roles.table.company'))
                     ->badge()
@@ -65,21 +60,22 @@ class RolesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make()
-                ->schema(fn (CreateAction $action): array => [
+                    ->schema(fn (CreateAction $action): array => [
                         Select::make('company_id')
-                         ->relationship(
-                            name: 'company', 
-                            titleAttribute: 'name',
-                            modifyQueryUsing: function (Builder $query, $livewire) {
-                                $companyIds = $livewire->getOwnerRecord()->companies()->pluck('companies.id')->toArray();
-                                return $query->whereIn('id', $companyIds);
-                            }
-                        )
-                        ->searchable()
-                        ->preload()
-                        ->required()
-                        ->default(fn () => \Filament\Facades\Filament::getTenant()?->id)
-                        ->hidden(fn () => \Filament\Facades\Filament::getTenant() !== null),
+                            ->relationship(
+                                name: 'company',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: function (Builder $query, $livewire) {
+                                    $companyIds = $livewire->getOwnerRecord()->companies()->pluck('companies.id')->toArray();
+
+                                    return $query->whereIn('id', $companyIds);
+                                }
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->required()
+                            ->default(fn () => Filament::getTenant()?->id)
+                            ->hidden(fn () => Filament::getTenant() !== null),
                         TextInput::make('name')
                             ->label(__('users.fields.name'))
                             ->required(),
@@ -88,13 +84,14 @@ class RolesRelationManager extends RelationManager
                             ->default('web')
                             ->required(),
                     ]),
-               Action::make('asignar_rol_contextual')
+                Action::make('asignar_rol_contextual')
                     ->label(__('roles.actions.assign_role'))
                     ->icon('heroicon-m-link')
                     ->color('primary')
                     ->modalWidth('md')
                     ->form(function () {
-                        $tenant = \Filament\Facades\Filament::getTenant();
+                        $tenant = Filament::getTenant();
+
                         return [
                             // 1. PRIMER SELECT: La Empresa
                             Select::make('company_id')
@@ -122,7 +119,9 @@ class RolesRelationManager extends RelationManager
                                 ->hidden(fn (UtilitiesGet $get) => ! $get('company_id'))
                                 ->options(function (UtilitiesGet $get, $livewire) {
                                     $companyId = $get('company_id');
-                                    if (! $companyId) return [];
+                                    if (! $companyId) {
+                                        return [];
+                                    }
 
                                     $user = $livewire->getOwnerRecord();
                                     $rolesYaAsignados = $user->rolesAll()->pluck('roles.id')->toArray();
@@ -138,7 +137,7 @@ class RolesRelationManager extends RelationManager
                     })
                     ->action(function (array $data, $livewire) {
                         $user = $livewire->getOwnerRecord();
-                        
+
                         // 1. Configuramos el contexto de Spatie
                         setPermissionsTeamId($data['company_id']);
 
@@ -148,8 +147,8 @@ class RolesRelationManager extends RelationManager
                         // 3. Asignamos
                         if ($role) {
                             $user->assignRole($role);
-                            
-                            \Filament\Notifications\Notification::make()
+
+                            Notification::make()
                                 ->title(__('roles.actions.assigned_success'))
                                 ->success()
                                 ->send();
@@ -157,12 +156,12 @@ class RolesRelationManager extends RelationManager
 
                         // 4. Limpiamos el contexto
                         setPermissionsTeamId(null);
-                    })
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
                 ViewAction::make(),
-                DetachAction::make()
+                DetachAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

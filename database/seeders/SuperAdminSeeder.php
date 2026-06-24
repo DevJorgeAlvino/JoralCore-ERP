@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -25,7 +25,7 @@ class SuperAdminSeeder extends Seeder
             [
                 'name' => 'Core',
                 'password' => Hash::make('mimomimaximen30'), // Tu contraseña segura
-                'email_verified_at' => now()
+                'email_verified_at' => now(),
                 // Si tienes campos obligatorios extra, ponlos aquí
             ]
         );
@@ -34,9 +34,9 @@ class SuperAdminSeeder extends Seeder
         // Usamos firstOrCreate para que no falle si Shield ya lo creó
         $role = Role::firstOrCreate(
             [
-                'name' => 'super_admin', 
+                'name' => 'super_admin',
                 'guard_name' => 'web',
-                'company_id' => null // <--- ESTO ES LO IMPORTANTE
+                'company_id' => null, // <--- ESTO ES LO IMPORTANTE
             ]
         );
 
@@ -46,7 +46,7 @@ class SuperAdminSeeder extends Seeder
             $user->assignRole($role);
         }
 
-        $this->command->info("¡Super Admin Global creado exitosamente! 🚀");
+        $this->command->info('¡Super Admin Global creado exitosamente! 🚀');
         $this->command->info("Usuario: {$user->email}");
         $this->command->info("Rol: {$role->name} (Company ID: NULL)");
     }

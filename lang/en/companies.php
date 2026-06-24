@@ -37,7 +37,7 @@ return [
         'active' => 'Active',
         'inactive' => 'Inactive',
     ],
-    
+
     'relations' => [
         'assigned' => 'Assigned Companies',
         'assign_company' => 'Assign Company',
