@@ -154,6 +154,7 @@ class PresentationsRelationManager extends RelationManager
             ->filters([])
             ->headerActions([
                 CreateAction::make()
+                    ->modalWidth('4xl')
                     ->label('Nueva Presentación')
                     ->using(function (array $data, string $model): ItemPresentation {
                         // Crear la presentación
@@ -189,6 +190,7 @@ class PresentationsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
+                    ->modalWidth('4xl')
                     ->using(function (ItemPresentation $record, array $data): ItemPresentation {
                         $record->update([
                             'unit_measure_id' => $data['unit_measure_id'],
