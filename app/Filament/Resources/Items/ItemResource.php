@@ -34,7 +34,33 @@ class ItemResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'sku', 'barcode'];
+        return ['name', 'sku', 'barcode', 'presentations.name', 'presentations.barcode'];
+    }
+
+    public static function getGlobalSearchResultDetails(\Illuminate\Database\Eloquent\Model $record): array
+    {
+        $details = [];
+
+        if ($record->sku) {
+            $details['SKU'] = $record->sku;
+        }
+
+        if ($record->barcode) {
+            $details['Código de Barras'] = $record->barcode;
+        }
+
+        // Mostrar las presentaciones asociadas en el resultado de búsqueda
+        $presentationsList = $record->presentations->pluck('name')->implode(', ');
+        if ($presentationsList) {
+            $details['Presentaciones'] = $presentationsList;
+        }
+
+        return $details;
+    }
+
+    public static function getGlobalSearchEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getGlobalSearchEloquentQuery()->with(['presentations']);
     }
 
     public static function getModelLabel(): string
