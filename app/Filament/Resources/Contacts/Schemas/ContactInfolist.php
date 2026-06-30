@@ -43,12 +43,32 @@ class ContactInfolist
                                 default => $state,
                             }),
 
+                        TextEntry::make('legal_type')
+                            ->label('Tipo de Contribuyente')
+                            ->badge()
+                            ->color(fn (string $state): string => match ($state) {
+                                'person' => 'gray',
+                                'company' => 'primary',
+                                default => 'gray',
+                            })
+                            ->formatStateUsing(fn (string $state): string => match ($state) {
+                                'person' => 'Persona Natural',
+                                'company' => 'Persona Jurídica (Empresa)',
+                                default => $state,
+                            }),
+
                         TextEntry::make('document_type')
                             ->label('Tipo de Documento')
                             ->formatStateUsing(fn ($state) => strtoupper($state)),
 
                         TextEntry::make('document_number')
                             ->label('Número de Documento'),
+
+                        TextEntry::make('business_activity')
+                            ->label('Giro Comercial')
+                            ->placeholder('—')
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => !empty($record->business_activity)),
 
                         TextEntry::make('email')
                             ->label('Correo Electrónico')
@@ -60,17 +80,31 @@ class ContactInfolist
                     ]),
                 ])->columnSpanFull(),
 
-            Section::make('Direcciones de Despacho')
+            Section::make('Direcciones de Despacho y Facturación')
                 ->icon('heroicon-o-truck')
                 ->schema([
                     RepeatableEntry::make('addresses')
                         ->label('')
                         ->schema([
-                            Grid::make(5)->schema([
+                            Grid::make(6)->schema([
                                 TextEntry::make('label')
                                     ->label('Etiqueta')
                                     ->weight('bold')
                                     ->color('primary'),
+
+                                TextEntry::make('type')
+                                    ->label('Tipo de Dirección')
+                                    ->badge()
+                                    ->color(fn (string $state): string => match ($state) {
+                                        'fiscal' => 'warning',
+                                        'shipping' => 'info',
+                                        default => 'gray',
+                                    })
+                                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                                        'fiscal' => 'Fiscal (Facturación)',
+                                        'shipping' => 'Despacho (Entrega)',
+                                        default => $state,
+                                    }),
 
                                 TextEntry::make('address')
                                     ->label('Dirección')
@@ -85,7 +119,7 @@ class ContactInfolist
                                     ->boolean(),
                             ]),
                         ])
-                        ->placeholder('No hay direcciones de despacho registradas para este contacto.')
+                        ->placeholder('No hay direcciones registradas para este contacto.')
                         ->columnSpanFull(),
                 ])->columnSpanFull(),
 
@@ -103,6 +137,11 @@ class ContactInfolist
                                 'credit_90' => 'Crédito 90 días',
                                 default => $state,
                             }),
+
+                        TextEntry::make('credit_limit')
+                            ->label('Límite de Crédito')
+                            ->numeric()
+                            ->visible(fn ($record) => $record->billing_payment_terms !== 'cash'),
 
                         TextEntry::make('company.name')
                             ->label('Empresa')

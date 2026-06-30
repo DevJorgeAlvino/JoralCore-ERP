@@ -12,6 +12,7 @@ class ContactAddress extends Model
 
     protected $fillable = [
         'contact_id',
+        'type',
         'label',
         'address',
         'city',

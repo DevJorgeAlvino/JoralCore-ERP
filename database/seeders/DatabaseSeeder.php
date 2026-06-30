@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             ItemSeeder::class,
             ItemPresentationSeeder::class,
+            ContactSeeder::class,
         ]);
 
     }

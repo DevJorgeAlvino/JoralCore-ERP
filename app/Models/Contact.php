@@ -15,17 +15,21 @@ class Contact extends Model
     protected $fillable = [
         'company_id',
         'type',
+        'legal_type',
         'name',
         'document_type',
         'document_number',
+        'business_activity',
         'email',
         'phone',
         'billing_payment_terms',
+        'credit_limit',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'credit_limit' => 'decimal:4',
     ];
 
     public function company(): BelongsTo

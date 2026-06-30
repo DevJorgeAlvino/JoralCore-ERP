@@ -47,6 +47,17 @@ class ContactForm
                                     ->default('customer')
                                     ->native(false),
 
+                                Select::make('legal_type')
+                                    ->label('Tipo de Contribuyente')
+                                    ->options([
+                                        'person' => 'Persona Natural',
+                                        'company' => 'Persona Jurídica (Empresa)',
+                                    ])
+                                    ->required()
+                                    ->default('person')
+                                    ->native(false)
+                                    ->live(),
+
                                 Select::make('document_type')
                                     ->label('Tipo de Documento')
                                     ->options([
@@ -126,6 +137,14 @@ class ContactForm
                                     ])
                                     ->columnSpanFull(),
 
+                                TextInput::make('business_activity')
+                                    ->label('Giro Comercial (Actividad)')
+                                    ->placeholder('Ej. Venta de artículos tecnológicos')
+                                    ->maxLength(255)
+                                    ->visible(fn (Get $get) => in_array($get('document_type'), ['run', 'rut']))
+                                    ->required(fn (Get $get) => $get('document_type') === 'rut' && $get('legal_type') === 'company')
+                                    ->columnSpanFull(),
+
                                 TextInput::make('email')
                                     ->label('Correo Electrónico')
                                     ->placeholder('ejemplo@correo.com')
@@ -140,18 +159,35 @@ class ContactForm
                             ])
                         ]),
 
-                    Section::make('Direcciones de Despacho')
+                    Section::make('Direcciones de Despacho y Facturación')
                         ->description('Gestiona las direcciones de entrega de este contacto.')
                         ->icon('heroicon-o-truck')
                         ->schema([
                             Repeater::make('addresses')
+                                ->label('Direcciones')
                                 ->relationship('addresses')
                                 ->schema([
-                                    TextInput::make('label')
-                                        ->label('Etiqueta')
-                                        ->placeholder('Ej. Oficina Central, Almacén Callao')
-                                        ->required()
-                                        ->default('Oficina Principal'),
+                                    Grid::make(2)
+                                        ->columnSpanFull()
+                                        ->schema([
+                                        TextInput::make('label')
+                                            ->label('Etiqueta')
+                                            ->placeholder('Ej. Oficina Central, Almacén Callao')
+                                            ->required()
+                                            ->default('Oficina Principal')
+                                            ->columnSpan(1),
+
+                                        Select::make('type')
+                                            ->label('Tipo de Dirección')
+                                            ->options([
+                                                'fiscal' => 'Dirección Fiscal (Facturación)',
+                                                'shipping' => 'Dirección de Despacho (Entrega)',
+                                            ])
+                                            ->required()
+                                            ->default('shipping')
+                                            ->native(false)
+                                            ->columnSpan(1),
+                                    ]),
 
                                     TextInput::make('address')
                                         ->label('Dirección')
@@ -222,7 +258,16 @@ class ContactForm
                                 ])
                                 ->required()
                                 ->default('cash')
-                                ->native(false),
+                                ->native(false)
+                                ->live(),
+
+                            TextInput::make('credit_limit')
+                                ->label('Límite de Crédito')
+                                ->placeholder('0.00')
+                                ->numeric()
+                                ->default(0.00)
+                                ->visible(fn (Get $get) => $get('billing_payment_terms') !== 'cash')
+                                ->required(fn (Get $get) => $get('billing_payment_terms') !== 'cash'),
                         ]),
 
                     Section::make('Estado')
