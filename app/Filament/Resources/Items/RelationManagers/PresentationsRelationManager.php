@@ -180,6 +180,26 @@ class PresentationsRelationManager extends RelationManager
                     ->badge()
                     ->color('gray'),
 
+                TextColumn::make('prices_purchase_cost')
+                    ->label('Costo')
+                    ->money(fn () => filament()->getTenant()?->currency ?? 'PEN')
+                    ->state(fn (ItemPresentation $record) => $record->prices()->where('is_active', true)->latest()->value('purchase_cost') ?? 0)
+                    ->toggleable(),
+
+                TextColumn::make('prices_sale_price')
+                    ->label('Precio Venta')
+                    ->money(fn () => filament()->getTenant()?->currency ?? 'PEN')
+                    ->state(fn (ItemPresentation $record) => $record->prices()->where('is_active', true)->latest()->value('sale_price') ?? 0)
+                    ->toggleable()
+                    ->weight('bold'),
+
+                TextColumn::make('stock_current_stock')
+                    ->label('Stock Actual')
+                    ->numeric(decimalPlaces: 2)
+                    ->state(fn (ItemPresentation $record) => $record->stock?->current_stock ?? 0)
+                    ->badge()
+                    ->color(fn ($state, ItemPresentation $record) => $state <= ($record->stock?->minimum_stock ?? 0) ? 'danger' : 'success'),
+
                 IconColumn::make('is_default')
                     ->label('Principal')
                     ->boolean()
