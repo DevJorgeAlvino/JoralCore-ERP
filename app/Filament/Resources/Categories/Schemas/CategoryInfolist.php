@@ -46,6 +46,19 @@ class CategoryInfolist
                     Grid::make(3)->schema([
                         TextEntry::make('icon')
                             ->label('Ícono')
+                            ->icon(function ($state) {
+                                if (empty($state)) {
+                                    return null;
+                                }
+                                $iconName = str_starts_with($state, 'heroicon-') ? $state : "heroicon-o-{$state}";
+                                try {
+                                    app(\BladeUI\Icons\Factory::class)->svg($iconName);
+                                    return $iconName;
+                                } catch (\Throwable $e) {
+                                    return null;
+                                }
+                            })
+                            ->color('primary')
                             ->placeholder('—'),
 
                         ColorEntry::make('color')

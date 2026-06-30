@@ -8,6 +8,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Facades\Filament;
 use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -23,6 +24,22 @@ class CategoriesTable
                 ColorColumn::make('color')
                     ->label('')
                     ->width('40px'),
+
+                IconColumn::make('icon')
+                    ->label('')
+                    ->width('40px')
+                    ->icon(function ($state) {
+                        if (empty($state)) {
+                            return null;
+                        }
+                        $iconName = str_starts_with($state, 'heroicon-') ? $state : "heroicon-o-{$state}";
+                        try {
+                            app(\BladeUI\Icons\Factory::class)->svg($iconName);
+                            return $iconName;
+                        } catch (\Throwable $e) {
+                            return null;
+                        }
+                    }),
 
                 TextColumn::make('name')
                     ->label('Nombre')

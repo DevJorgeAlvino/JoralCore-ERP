@@ -18,6 +18,7 @@ class ItemPresentation extends Model
         'unit_measure_id',
         'name',
         'barcode',
+        'images',
         'conversion_factor',
         'is_default',
         'is_active',
@@ -27,6 +28,7 @@ class ItemPresentation extends Model
         'conversion_factor' => 'decimal:4',
         'is_default' => 'boolean',
         'is_active' => 'boolean',
+        'images' => 'array',
     ];
 
     public function item(): BelongsTo

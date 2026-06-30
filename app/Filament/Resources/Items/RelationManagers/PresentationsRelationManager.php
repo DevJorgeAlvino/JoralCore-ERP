@@ -6,13 +6,17 @@ use App\Models\ItemPresentation;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -27,90 +31,121 @@ class PresentationsRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            Section::make('Datos de la Presentación')
-                ->icon('heroicon-o-archive-box')
-                ->schema([
-                    TextInput::make('name')
-                        ->label('Nombre')
-                        ->placeholder('Ej. Botella 1L, Caja x24, Unidad')
-                        ->required()
-                        ->maxLength(255)
-                        ->columnSpanFull(),
+            Hidden::make('id')
+                ->default(fn () => (string) \Illuminate\Support\Str::ulid()),
 
-                    Select::make('unit_measure_id')
-                        ->label('Unidad de Medida')
-                        ->relationship(
-                            name: 'unitMeasure',
-                            titleAttribute: 'name',
-                            modifyQueryUsing: fn ($query) => $query->where('company_id', $this->getOwnerRecord()->company_id)
-                        )
-                        ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
-                        ->searchable()
-                        ->preload()
-                        ->native(false)
-                        ->required(),
+            Grid::make(12)->columnSpanFull()->schema([
+                // Columna Izquierda: Datos, Precios, Stock (8/12)
+                Grid::make(1)
+                    ->columnSpan(7)
+                    ->schema([
+                        Section::make('Datos de la Presentación')
+                            ->icon('heroicon-o-archive-box')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Nombre')
+                                    ->placeholder('Ej. Botella 1L, Caja x24, Unidad')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
 
-                    TextInput::make('barcode')
-                        ->label('Código de Barras')
-                        ->placeholder('Opcional — código único de esta presentación')
-                        ->maxLength(255),
+                                Select::make('unit_measure_id')
+                                    ->label('Unidad de Medida')
+                                    ->relationship(
+                                        name: 'unitMeasure',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: fn ($query) => $query->where('company_id', $this->getOwnerRecord()->company_id)
+                                    )
+                                    ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->code} - {$record->name}")
+                                    ->searchable()
+                                    ->preload()
+                                    ->native(false)
+                                    ->required(),
 
-                    TextInput::make('conversion_factor')
-                        ->label('Factor de Conversión')
-                        ->helperText('Cantidad de unidades base que equivalen a esta presentación. Ej: caja de 24 = 24')
-                        ->numeric()
-                        ->default(1)
-                        ->step('0.0001')
-                        ->minValue(0.0001),
-                ])->columns(2),
+                                TextInput::make('barcode')
+                                    ->label('Código de Barras')
+                                    ->placeholder('Opcional — código único')
+                                    ->maxLength(255),
 
-            Section::make('Precio General')
-                ->description('Precio base para esta presentación. Puedes agregar más listas de precio desde la sección de precios.')
-                ->icon('heroicon-o-currency-dollar')
-                ->schema([
-                    TextInput::make('default_purchase_cost')
-                        ->label('Costo de Compra')
-                        ->numeric()
-                        ->prefix('$')
-                        ->step('0.01')
-                        ->default(0),
+                                TextInput::make('conversion_factor')
+                                    ->label('Factor de Conversión')
+                                    ->helperText('Cantidad de unidades base que equivalen a esta presentación. Ej: caja de 24 = 24')
+                                    ->numeric()
+                                    ->default(1)
+                                    ->step('0.0001')
+                                    ->minValue(0.0001)
+                                    ->columnSpanFull(),
 
-                    TextInput::make('default_sale_price')
-                        ->label('Precio de Venta')
-                        ->numeric()
-                        ->prefix('$')
-                        ->step('0.01')
-                        ->default(0),
-                ])->columns(2),
+                                Toggle::make('is_default')
+                                    ->label('Presentación Principal')
+                                    ->helperText('Marca esta como la presentación por defecto del ítem.'),
 
-            Section::make('Stock Inicial')
-                ->description('Stock de esta presentación en bodega.')
-                ->icon('heroicon-o-archive-box-arrow-down')
-                ->schema([
-                    TextInput::make('initial_stock')
-                        ->label('Stock Actual')
-                        ->numeric()
-                        ->default(0)
-                        ->step('0.01')
-                        ->minValue(0),
+                                Toggle::make('is_active')
+                                    ->label('Activa')
+                                    ->default(true),
+                            ])->columns(2),
+                        Grid::make(1)->schema([
+                            Section::make('Precio General')
+                                ->description('Precio base para esta presentación.')
+                                ->icon('heroicon-o-currency-dollar')
+                                ->schema([
+                                    TextInput::make('default_purchase_cost')
+                                        ->label('Costo de Compra')
+                                        ->numeric()
+                                        ->prefix('$')
+                                        ->step('0.01')
+                                        ->default(0),
 
-                    TextInput::make('minimum_stock')
-                        ->label('Stock Mínimo (Alerta)')
-                        ->numeric()
-                        ->default(0)
-                        ->step('0.01')
-                        ->minValue(0),
-                ])->columns(2),
+                                    TextInput::make('default_sale_price')
+                                        ->label('Precio de Venta')
+                                        ->numeric()
+                                        ->prefix('$')
+                                        ->step('0.01')
+                                        ->default(0),
+                                ])->columns(2),
 
-            Section::make('Estado')->schema([
-                Toggle::make('is_default')
-                    ->label('Presentación Principal')
-                    ->helperText('Marca esta como la presentación por defecto del ítem.'),
+                            Section::make('Stock Inicial')
+                                ->description('Stock de esta presentación en bodega.')
+                                ->icon('heroicon-o-archive-box-arrow-down')
+                                ->schema([
+                                    TextInput::make('initial_stock')
+                                        ->label('Stock Actual')
+                                        ->numeric()
+                                        ->default(0)
+                                        ->step('0.01')
+                                        ->minValue(0),
 
-                Toggle::make('is_active')
-                    ->label('Activa')
-                    ->default(true),
-            ])->columns(2),
+                                    TextInput::make('minimum_stock')
+                                        ->label('Stock Mínimo (Alerta)')
+                                        ->numeric()
+                                        ->default(0)
+                                        ->step('0.01')
+                                        ->minValue(0),
+                                ])->columns(2),
+                        ]),
+                    ]),
+
+                // Columna Derecha: Imágenes (4/12)
+                Grid::make(1)
+                    ->columnSpan(5)
+                    ->schema([
+                        Section::make('Imágenes Representativas')
+                            ->description('Sube imágenes específicas de esta presentación.')
+                            ->icon('heroicon-o-photo')
+                            ->schema([
+                                FileUpload::make('images')
+                                    ->label('Imágenes')
+                                    ->image()
+                                    ->multiple()
+                                    ->reorderable()
+                                    ->maxFiles(5)
+                                    ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
+                                    ->visibility('public')
+                                    ->directory(fn ($get) => "companies/company_{$this->getOwnerRecord()->company_id}/items/{$this->getOwnerRecord()->id}/presentations/presentation_{$get('id')}/images")
+                                    ->columnSpanFull(),
+                            ]),
+                    ]),
+            ]),
         ]);
     }
 
@@ -119,6 +154,12 @@ class PresentationsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
+                ImageColumn::make('images')
+                    ->label('Imagen')
+                    ->disk(env('CLOUDFLARE_R2_ENDPOINT') ? 'r2_public' : 'public')
+                    ->circular()
+                    ->limit(1),
+
                 TextColumn::make('name')
                     ->label('Presentación')
                     ->searchable()
@@ -154,14 +195,16 @@ class PresentationsRelationManager extends RelationManager
             ->filters([])
             ->headerActions([
                 CreateAction::make()
-                    ->modalWidth('4xl')
+                    ->modalWidth('7xl')
                     ->label('Nueva Presentación')
                     ->using(function (array $data, string $model): ItemPresentation {
                         // Crear la presentación
                         $presentation = $this->getOwnerRecord()->presentations()->create([
+                            'id' => $data['id'],
                             'unit_measure_id' => $data['unit_measure_id'],
                             'name' => $data['name'],
                             'barcode' => $data['barcode'] ?? null,
+                            'images' => $data['images'] ?? null,
                             'conversion_factor' => $data['conversion_factor'] ?? 1,
                             'is_default' => $data['is_default'] ?? false,
                             'is_active' => $data['is_active'] ?? true,
@@ -190,12 +233,13 @@ class PresentationsRelationManager extends RelationManager
             ])
             ->actions([
                 EditAction::make()
-                    ->modalWidth('4xl')
+                    ->modalWidth('7xl')
                     ->using(function (ItemPresentation $record, array $data): ItemPresentation {
                         $record->update([
                             'unit_measure_id' => $data['unit_measure_id'],
                             'name' => $data['name'],
                             'barcode' => $data['barcode'] ?? null,
+                            'images' => $data['images'] ?? null,
                             'conversion_factor' => $data['conversion_factor'] ?? 1,
                             'is_default' => $data['is_default'] ?? false,
                             'is_active' => $data['is_active'] ?? true,
@@ -228,9 +272,11 @@ class PresentationsRelationManager extends RelationManager
                         return $record;
                     })
                     ->fillForm(fn (ItemPresentation $record) => [
+                        'id' => $record->id,
                         'unit_measure_id' => $record->unit_measure_id,
                         'name' => $record->name,
                         'barcode' => $record->barcode,
+                        'images' => $record->images ?? [],
                         'conversion_factor' => $record->conversion_factor,
                         'is_default' => $record->is_default,
                         'is_active' => $record->is_active,

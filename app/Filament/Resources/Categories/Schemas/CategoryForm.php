@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Categories\Schemas;
 
 use App\Models\Category;
 use Filament\Facades\Filament;
+use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -15,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 
 class CategoryForm
 {
@@ -44,7 +46,18 @@ class CategoryForm
                                 ->placeholder('Se genera automáticamente')
                                 ->required()
                                 ->maxLength(255)
-                                ->unique(table: 'categories', column: 'slug', ignoreRecord: true)
+                                ->unique(
+                                    table: 'categories',
+                                    column: 'slug',
+                                    ignoreRecord: true,
+                                    modifyRuleUsing: function (Unique $rule, Get $get) {
+                                        $companyId = Filament::getCurrentPanel()?->getId() === 'admin'
+                                            ? $get('company_id')
+                                            : Filament::getTenant()?->id;
+
+                                        return $companyId ? $rule->where('company_id', $companyId) : $rule;
+                                    }
+                                )
                                 ->helperText('Identificador único para URLs. Solo letras minúsculas, números y guiones.'),
 
                             Textarea::make('description')
@@ -60,8 +73,15 @@ class CategoryForm
                         ->schema([
                             TextInput::make('icon')
                                 ->label('Ícono (Heroicon)')
-                                ->placeholder('heroicon-o-tag')
-                                ->helperText('Ingresa el nombre de un Heroicon. Ej: heroicon-o-shopping-bag')
+                                ->placeholder('Ej. heroicon-o-shopping-bag')
+                                ->suffixAction(
+                                    Action::make('openHeroicons')
+                                        ->icon('heroicon-o-arrow-top-right-on-square')
+                                        ->tooltip('Buscar en Heroicons.com')
+                                        ->url('https://heroicons.com')
+                                        ->openUrlInNewTab()
+                                )
+                                ->helperText('Escribe el nombre del ícono de Heroicons (ej: tag o heroicon-o-tag). Haz clic en el botón de la derecha para explorar el catálogo oficial.')
                                 ->maxLength(100),
 
                             ColorPicker::make('color')
@@ -93,7 +113,7 @@ class CategoryForm
                                         ? $get('company_id')
                                         : Filament::getTenant()?->id;
 
-                                    if (! $companyId) {
+                                     if (! $companyId) {
                                         return [];
                                     }
 

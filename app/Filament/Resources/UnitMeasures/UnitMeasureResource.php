@@ -26,7 +26,7 @@ class UnitMeasureResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static bool $isScopedToTenant = true;
+    protected static string|\UnitEnum|null $navigationGroup = 'Catálogo';
 
     public static function getGloballySearchableAttributes(): array
     {

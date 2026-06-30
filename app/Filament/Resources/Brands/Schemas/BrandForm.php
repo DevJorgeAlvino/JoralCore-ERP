@@ -10,8 +10,10 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 
 class BrandForm
 {
@@ -41,6 +43,18 @@ class BrandForm
                                 ->placeholder('Se genera automáticamente')
                                 ->required()
                                 ->maxLength(255)
+                                ->unique(
+                                    table: 'brands',
+                                    column: 'slug',
+                                    ignoreRecord: true,
+                                    modifyRuleUsing: function (Unique $rule, Get $get) {
+                                        $companyId = Filament::getCurrentPanel()?->getId() === 'admin'
+                                            ? $get('company_id')
+                                            : Filament::getTenant()?->id;
+
+                                        return $companyId ? $rule->where('company_id', $companyId) : $rule;
+                                    }
+                                )
                                 ->helperText('Identificador único. Solo letras minúsculas, números y guiones.'),
 
                             TextInput::make('website')
