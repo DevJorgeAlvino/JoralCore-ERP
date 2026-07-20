@@ -12,7 +12,7 @@ class ItemStock extends Model
 
     protected $fillable = [
         'item_presentation_id',
-        'company_id',
+        'warehouse_id',
         'current_stock',
         'minimum_stock',
         'maximum_stock',
@@ -29,9 +29,9 @@ class ItemStock extends Model
         return $this->belongsTo(ItemPresentation::class, 'item_presentation_id');
     }
 
-    public function company(): BelongsTo
+    public function warehouse(): BelongsTo
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Warehouse::class);
     }
 
     public function isBelowMinimum(): bool

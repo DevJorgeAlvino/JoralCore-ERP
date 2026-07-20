@@ -196,9 +196,9 @@ class PresentationsRelationManager extends RelationManager
                 TextColumn::make('stock_current_stock')
                     ->label('Stock Actual')
                     ->numeric(decimalPlaces: 2)
-                    ->state(fn (ItemPresentation $record) => $record->stock?->current_stock ?? 0)
+                    ->state(fn (ItemPresentation $record) => $record->totalStock())
                     ->badge()
-                    ->color(fn ($state, ItemPresentation $record) => $state <= ($record->stock?->minimum_stock ?? 0) ? 'danger' : 'success'),
+                    ->color(fn ($state, ItemPresentation $record) => $state <= ($record->stocks()->sum('minimum_stock') ?? 0) ? 'danger' : 'success'),
 
                 IconColumn::make('is_default')
                     ->label('Principal')
@@ -241,12 +241,40 @@ class PresentationsRelationManager extends RelationManager
                             ]);
                         }
 
-                        // Crear stock inicial
-                        $presentation->stock()->create([
-                            'company_id' => $this->getOwnerRecord()->company_id,
-                            'current_stock' => $data['initial_stock'] ?? 0,
-                            'minimum_stock' => $data['minimum_stock'] ?? 0,
-                        ]);
+                        // Crear stock inicial asociado al almacén por defecto y registrar en Kardex
+                        $defaultWarehouseId = \App\Models\Warehouse::where('company_id', $this->getOwnerRecord()->company_id)
+                            ->where('is_default', true)
+                            ->value('id')
+                            ?? \App\Models\Warehouse::where('company_id', $this->getOwnerRecord()->company_id)
+                            ->value('id');
+
+                        if ($defaultWarehouseId) {
+                            $initialStock = $data['initial_stock'] ?? 0;
+
+                            $presentation->stocks()->create([
+                                'warehouse_id' => $defaultWarehouseId,
+                                'current_stock' => $initialStock,
+                                'minimum_stock' => $data['minimum_stock'] ?? 0,
+                            ]);
+
+                            if ($initialStock > 0) {
+                                $userId = auth()->id() ?? \App\Models\User::value('id');
+
+                                \App\Models\InventoryMovement::create([
+                                    'company_id' => $this->getOwnerRecord()->company_id,
+                                    'warehouse_id' => $defaultWarehouseId,
+                                    'item_presentation_id' => $presentation->id,
+                                    'user_id' => $userId,
+                                    'type' => 'in',
+                                    'concept' => 'Inventario Inicial',
+                                    'quantity' => $initialStock,
+                                    'unit_cost' => $data['default_purchase_cost'] ?? 0,
+                                    'balance_stock' => $initialStock,
+                                    'reference_document' => 'presentation_init',
+                                    'reference_number' => 'REG-PRES-' . $presentation->id,
+                                ]);
+                            }
+                        }
 
                         return $presentation;
                     }),
@@ -265,15 +293,55 @@ class PresentationsRelationManager extends RelationManager
                             'is_active' => $data['is_active'] ?? true,
                         ]);
 
-                        // Actualizar stock
-                        $record->stock()->updateOrCreate(
-                            ['item_presentation_id' => $record->id],
-                            [
-                                'company_id' => $record->item->company_id,
-                                'current_stock' => $data['initial_stock'] ?? $record->stock?->current_stock ?? 0,
-                                'minimum_stock' => $data['minimum_stock'] ?? $record->stock?->minimum_stock ?? 0,
-                            ]
-                        );
+                        // Actualizar stock del almacén por defecto y registrar Kardex si cambia
+                        $defaultWarehouseId = \App\Models\Warehouse::where('company_id', $record->item->company_id)
+                            ->where('is_default', true)
+                            ->value('id')
+                            ?? \App\Models\Warehouse::where('company_id', $record->item->company_id)
+                            ->value('id');
+
+                        if ($defaultWarehouseId) {
+                            $oldStockRecord = $record->stocks()->where('warehouse_id', $defaultWarehouseId)->first();
+                            $oldStock = $oldStockRecord ? (float) $oldStockRecord->current_stock : 0.0000;
+                            $newStock = (float) ($data['initial_stock'] ?? 0.0000);
+
+                            if ($newStock != $oldStock) {
+                                $diff = $newStock - $oldStock;
+                                $type = $diff > 0 ? 'in' : 'out';
+                                $quantity = abs($diff);
+
+                                $record->stocks()->updateOrCreate(
+                                    ['warehouse_id' => $defaultWarehouseId],
+                                    [
+                                        'current_stock' => $newStock,
+                                        'minimum_stock' => $data['minimum_stock'] ?? 0,
+                                    ]
+                                );
+
+                                $userId = auth()->id() ?? \App\Models\User::value('id');
+
+                                \App\Models\InventoryMovement::create([
+                                    'company_id' => $record->item->company_id,
+                                    'warehouse_id' => $defaultWarehouseId,
+                                    'item_presentation_id' => $record->id,
+                                    'user_id' => $userId,
+                                    'type' => $type,
+                                    'concept' => 'Ajuste por Edición',
+                                    'quantity' => $quantity,
+                                    'unit_cost' => $data['default_purchase_cost'] ?? 0,
+                                    'balance_stock' => $newStock,
+                                    'reference_document' => 'manual_edit',
+                                    'reference_number' => 'EDIT-PRES-' . $record->id,
+                                ]);
+                            } else {
+                                $record->stocks()->updateOrCreate(
+                                    ['warehouse_id' => $defaultWarehouseId],
+                                    [
+                                        'minimum_stock' => $data['minimum_stock'] ?? 0,
+                                    ]
+                                );
+                            }
+                        }
 
                         // Actualizar precio
                         $record->prices()->updateOrCreate(
@@ -300,8 +368,8 @@ class PresentationsRelationManager extends RelationManager
                         'conversion_factor' => $record->conversion_factor,
                         'is_default' => $record->is_default,
                         'is_active' => $record->is_active,
-                        'initial_stock' => $record->stock?->current_stock ?? 0,
-                        'minimum_stock' => $record->stock?->minimum_stock ?? 0,
+                        'initial_stock' => (float) ($record->stocks()->where('warehouse_id', \App\Models\Warehouse::where('company_id', $record->item->company_id)->where('is_default', true)->value('id') ?? \App\Models\Warehouse::where('company_id', $record->item->company_id)->value('id'))->value('current_stock') ?? 0),
+                        'minimum_stock' => (float) ($record->stocks()->where('warehouse_id', \App\Models\Warehouse::where('company_id', $record->item->company_id)->where('is_default', true)->value('id') ?? \App\Models\Warehouse::where('company_id', $record->item->company_id)->value('id'))->value('minimum_stock') ?? 0),
                         'default_purchase_cost' => $record->prices()->where('is_active', true)->latest()->value('purchase_cost') ?? 0,
                         'default_sale_price' => $record->prices()->where('is_active', true)->latest()->value('sale_price') ?? 0,
                     ]),

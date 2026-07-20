@@ -64,10 +64,9 @@ class ItemsTable
                     ->numeric()
                     ->sortable()
                     ->badge()
-                    ->color(fn (Item $record): string => $record->current_stock <= $record->minimum_stock ? 'danger' : 'success'
-                    )
-                    ->formatStateUsing(fn (Item $record): string => $record->manage_stock ? (string) $record->current_stock : 'N/A'
-                    )
+                    ->state(fn (Item $record): float => $record->totalStock())
+                    ->color(fn ($state, Item $record): string => $state <= $record->totalMinimumStock() ? 'danger' : 'success')
+                    ->formatStateUsing(fn ($state, Item $record): string => $record->manage_stock ? (string) $state : 'N/A')
                     ->toggleable(),
 
                 IconColumn::make('is_active')

@@ -168,4 +168,9 @@ class Company extends Model
     {
         return $this->hasMany(CompanySetting::class);
     }
+
+    public function warehouses()
+    {
+        return $this->hasMany(Warehouse::class);
+    }
 }

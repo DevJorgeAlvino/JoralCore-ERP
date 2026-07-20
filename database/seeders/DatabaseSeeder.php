@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             CompanySeeder::class,
             SettingsSeeder::class,
+            WarehouseSeeder::class,
             UnitMeasureSeeder::class,
             CategorySeeder::class,
             BrandSeeder::class,

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Item;
 use App\Models\ItemPresentation;
 use App\Models\UnitMeasure;
+use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
 
 class ItemPresentationSeeder extends Seeder
@@ -23,6 +24,13 @@ class ItemPresentationSeeder extends Seeder
         }
 
         foreach ($items as $item) {
+            // Obtener el almacén principal por defecto de la empresa
+            $defaultWarehouseId = Warehouse::where('company_id', $item->company_id)
+                ->where('is_default', true)
+                ->value('id')
+                ?? Warehouse::where('company_id', $item->company_id)
+                ->value('id');
+
             // ─── 1. PRESENTACIÓN BASE (Por defecto) ───────────
             $baseName = $item->type === 'service' ? 'Servicio Base' : 'Unidad';
 
@@ -52,15 +60,18 @@ class ItemPresentationSeeder extends Seeder
                 ]
             );
 
-            // Poblar stock inicial de la presentación base
-            $basePresentation->stock()->updateOrCreate(
-                ['item_presentation_id' => $basePresentation->id],
-                [
-                    'company_id' => $item->company_id,
-                    'current_stock' => $item->current_stock,
-                    'minimum_stock' => $item->minimum_stock,
-                ]
-            );
+            // Poblar stock inicial de la presentación base en el almacén por defecto
+            if ($defaultWarehouseId) {
+                $basePresentation->stocks()->updateOrCreate(
+                    [
+                        'warehouse_id' => $defaultWarehouseId,
+                    ],
+                    [
+                        'current_stock' => $item->current_stock,
+                        'minimum_stock' => $item->minimum_stock,
+                    ]
+                );
+            }
 
             // ─── 2. PRESENTACIÓN ADICIONAL (Solo para productos físicos) ───
             if ($item->type === 'product') {
@@ -98,15 +109,18 @@ class ItemPresentationSeeder extends Seeder
                     ]
                 );
 
-                // Stock inicial en cajas (stock actual dividido por 12)
-                $boxPresentation->stock()->updateOrCreate(
-                    ['item_presentation_id' => $boxPresentation->id],
-                    [
-                        'company_id' => $item->company_id,
-                        'current_stock' => floor($item->current_stock / 12),
-                        'minimum_stock' => 1.00,
-                    ]
-                );
+                // Stock inicial en cajas en el almacén por defecto
+                if ($defaultWarehouseId) {
+                    $boxPresentation->stocks()->updateOrCreate(
+                        [
+                            'warehouse_id' => $defaultWarehouseId,
+                        ],
+                        [
+                            'current_stock' => floor($item->current_stock / 12),
+                            'minimum_stock' => 1.00,
+                        ]
+                    );
+                }
             }
         }
 

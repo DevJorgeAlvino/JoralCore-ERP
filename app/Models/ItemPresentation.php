@@ -46,9 +46,14 @@ class ItemPresentation extends Model
         return $this->hasMany(ItemPrice::class);
     }
 
-    public function stock(): HasOne
+    public function stocks(): HasMany
     {
-        return $this->hasOne(ItemStock::class);
+        return $this->hasMany(ItemStock::class);
+    }
+
+    public function totalStock(): float
+    {
+        return (float) $this->stocks()->sum('current_stock');
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Items;
 use App\Filament\Resources\Items\Pages\EditItem;
 use App\Filament\Resources\Items\Pages\ListItems;
 use App\Filament\Resources\Items\Pages\ViewItem;
+use App\Filament\Resources\Items\RelationManagers\InventoryMovementsRelationManager;
 use App\Filament\Resources\Items\RelationManagers\PresentationsRelationManager;
 use App\Filament\Resources\Items\Schemas\ItemForm;
 use App\Filament\Resources\Items\Schemas\ItemInfolist;
@@ -100,6 +101,7 @@ class ItemResource extends Resource
     {
         return [
             PresentationsRelationManager::class,
+            InventoryMovementsRelationManager::class,
         ];
     }
 
